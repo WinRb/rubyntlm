@@ -45,6 +45,7 @@
 require 'base64'
 require 'openssl'
 require 'openssl/digest'
+require 'kconv'
 
 module Net  #:nodoc:
   module NTLM
