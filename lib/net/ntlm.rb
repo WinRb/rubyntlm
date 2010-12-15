@@ -668,6 +668,7 @@ module Net  #:nodoc:
         def response(arg, opt = {})
           usr = arg[:user]
           pwd = arg[:password]
+          domain = arg[:domain] ? arg[:domain] : ""
           if usr.nil? or pwd.nil?
             raise ArgumentError, "user and password have to be supplied"
           end
@@ -700,13 +701,12 @@ module Net  #:nodoc:
             opt[:unicode] = true
           end
 
-          tgt = self.target_name
           ti = self.target_info
 
           chal = self[:challenge].serialize
-          
+
           if opt[:ntlmv2]
-            ar = {:ntlmv2_hash => NTLM::ntlmv2_hash(usr, pwd, tgt, opt), :challenge => chal, :target_info => ti}
+            ar = {:ntlmv2_hash => NTLM::ntlmv2_hash(usr, pwd, domain, opt), :challenge => chal, :target_info => ti}
             lm_res = NTLM::lmv2_response(ar, opt)
             ntlm_res = NTLM::ntlmv2_response(ar, opt)
           elsif has_flag?(:NTLM2_KEY)
@@ -720,7 +720,7 @@ module Net  #:nodoc:
           Type3.create({
           	:lm_response => lm_res,
           	:ntlm_response => ntlm_res,
-          	:domain => tgt,
+          	:domain => domain,
             :user => usr,
             :workstation => ws,
             :flag => self.flag
