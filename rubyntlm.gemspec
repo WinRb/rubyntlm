@@ -13,7 +13,6 @@ Gem::Specification.new do |s|
   s.rubyforge_project = 'rubyntlm'
 
   s.files = Dir['Rakefile', 'README', 'lib/**/*', 'examples/**/*', 'test/**/*']
-  s.require_path = 'lib'
 
   s.has_rdoc = true
   s.extra_rdoc_files = %w( README )

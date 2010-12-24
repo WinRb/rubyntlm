@@ -48,7 +48,7 @@ require 'openssl/digest'
 require 'kconv'
 
 module Net  #:nodoc:
-  module NTLM
+  module NTLM #:nodoc:
 
     module VERSION #:nodoc:
       MAJOR = 0
