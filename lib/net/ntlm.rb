@@ -46,6 +46,7 @@ require 'base64'
 require 'openssl'
 require 'openssl/digest'
 require 'kconv'
+require 'socket'
 
 module Net  #:nodoc:
   module NTLM #:nodoc:
@@ -606,8 +607,8 @@ module Net  #:nodoc:
         string          :sign,         {:size => 8, :value => SSP_SIGN}
         int32LE         :type,         {:value => 1}
         int32LE         :flag,         {:value => DEFAULT_FLAGS[:TYPE1] }
-        security_buffer :domain,       {:value => "", :active => false}
-        security_buffer :workstation,  {:value => "", :active => false}
+        security_buffer :domain,       {:value => ""}
+        security_buffer :workstation,  {:value => Socket.gethostname }
         string          :padding,      {:size => 0, :value => "", :active => false }
       }
 
@@ -755,8 +756,13 @@ module Net  #:nodoc:
             t.ntlm_response = arg[:ntlm_response]
             t.domain = arg[:domain]
             t.user = arg[:user]
-            t.workstation = arg[:workstation]
-            
+
+            if arg[:workstation]
+              t.workstation = arg[:workstation] 
+            else
+              t.workstation = NTLM.encode_utf16le(Socket.gethostname)
+            end
+
             if arg[:session_key]
               t.enable(:session_key)
               t.session_key = arg[session_key]
