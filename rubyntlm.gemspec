@@ -7,14 +7,16 @@ Gem::Specification.new do |s|
   s.summary = 'Ruby/NTLM library.'
   s.description = 'Ruby/NTLM provides message creator and parser for the NTLM authentication.'
 
-  s.author = 'Kohei Kajimoto'
-  s.email = 'koheik@gmail.com'
-  s.homepage = 'http://rubyforge.org/projects/rubyntlm'
-  s.rubyforge_project = 'rubyntlm'
+  s.authors = ['Kohei Kajimoto','Paul Morton']
+  s.email = ['koheik@gmail.com','paul.e.morton@gmail.com']
+  s.homepage = 'https://github.com/winrb/rubyntlm'
 
-  s.files = Dir['Rakefile', 'README', 'lib/**/*', 'examples/**/*', 'test/**/*']
 
-  s.has_rdoc = true
-  s.extra_rdoc_files = %w( README )
-  s.rdoc_options.concat ['--main', 'README']
+  s.files         = `git ls-files`.split($/)
+  s.executables   = s.files.grep(%r{^bin/}) { |f| File.basename(f) }
+  s.test_files    = s.files.grep(%r{^(test|spec|features)/})
+  s.require_paths = ["lib"]
+
+  s.add_development_dependency "bundler", "~> 1.3"
+  s.add_development_dependency "rake"
 end
