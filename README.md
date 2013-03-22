@@ -1,6 +1,6 @@
 # Ruby/NTLM -- NTLM Authentication Library for Ruby
 
-[![Build Status](https://travis-ci.org/winrb/[rubyntlm].png)](https://travis-ci.org/winrb/rubyntlm)
+[![Build Status](https://travis-ci.org/WinRb/rubyntlm.png)](https://travis-ci.org/WinRb/rubyntlm)
 
 Ruby/NTLM provides message creator and parser for the NTLM authentication. 
 
