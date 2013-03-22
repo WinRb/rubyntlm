@@ -48,10 +48,10 @@ require 'openssl/digest'
 require 'kconv'
 require 'socket'
 
-module Net  #:nodoc:
-  module NTLM #:nodoc:
-
-    module VERSION #:nodoc:
+module Net
+  module NTLM
+    # @private
+    module VERSION
       MAJOR = 0
       MINOR = 2
       TINY  = 0
@@ -68,14 +68,14 @@ module Net  #:nodoc:
       :UNICODE              => 0x00000001,
       :OEM                  => 0x00000002,
       :REQUEST_TARGET       => 0x00000004,
-  #   :UNKNOWN              => 0x00000008,
+      :MBZ9                 => 0x00000008,
       :SIGN                 => 0x00000010,
       :SEAL                 => 0x00000020,
-  #   :UNKNOWN              => 0x00000040,
+      :NEG_DATAGRAM         => 0x00000040,
       :NETWARE              => 0x00000100,
       :NTLM                 => 0x00000200,
-  #   :UNKNOWN              => 0x00000400,
-  #   :UNKNOWN              => 0x00000800,
+      :NEG_NT_ONLY          => 0x00000400,
+      :MBZ7                 => 0x00000800,
       :DOMAIN_SUPPLIED      => 0x00001000,
       :WORKSTATION_SUPPLIED => 0x00002000,
       :LOCAL_CALL           => 0x00004000,
@@ -85,7 +85,7 @@ module Net  #:nodoc:
       :NTLM2_KEY            => 0x00080000,
       :KEY128               => 0x20000000,
       :KEY56                => 0x80000000
-    }
+    }.freeze
     
     FLAG_KEYS = FLAGS.keys.sort{|a, b| FLAGS[a] <=> FLAGS[b] }
 
@@ -95,24 +95,36 @@ module Net  #:nodoc:
       :TYPE3 => FLAGS[:UNICODE] | FLAGS[:REQUEST_TARGET] | FLAGS[:NTLM] | FLAGS[:ALWAYS_SIGN] | FLAGS[:NTLM2_KEY]
     }
 
-  # module functions
+
     class << self
+
+      # Decode a UTF16 string to a ASCII string
+      # @param [String] str The string to convert
       def decode_utf16le(str)
         Kconv.kconv(swap16(str), Kconv::ASCII, Kconv::UTF16)
       end
 
+      # Encodes a ASCII string to a UTF16 string
+      # @param [String] str The string to convert
       def encode_utf16le(str)
         swap16(Kconv.kconv(str, Kconv::UTF16, Kconv::ASCII))
       end
-    
+      
+      # Conver the value to a 64-Bit Little Endian Int
+      # @param [String] val The string to convert
       def pack_int64le(val)
           [val & 0x00000000ffffffff, val >> 32].pack("V2")
       end
       
+      # Taggle the strings endianness between big/little and little/big 
+      # @param [String] str The string to swap the endianness on
       def swap16(str)
         str.unpack("v*").pack("n*")
       end
 
+      # Builds an array of strings that are 7 characters long
+      # @param [String] str The string to split
+      # @api private
       def split7(str)
         s = str.dup
         until s.empty?
@@ -120,7 +132,10 @@ module Net  #:nodoc:
         end
         ret
       end
-    
+      
+      # Not sure what this is doing
+      # @param [String] str String to generate keys for
+      # @api private
       def gen_keys(str)
         split7(str).map{ |str7| 
           bits = split7(str7.unpack("B*")[0]).inject('')\
@@ -137,11 +152,16 @@ module Net  #:nodoc:
         }
       end
       
+      # Generates a Lan Manager Hash
+      # @param [String] password The password to base the hash on
       def lm_hash(password)
         keys = gen_keys password.upcase.ljust(14, "\0")
         apply_des(LM_MAGIC, keys).join
       end   
       
+      # Generate a NTLM Hash
+      # @param [String] password The password to base the hash on
+      # @option opt :unicode (false) Unicode encode the password
       def ntlm_hash(password, opt = {})
         pwd = password.dup
         unless opt[:unicode]
@@ -150,6 +170,11 @@ module Net  #:nodoc:
         OpenSSL::Digest::MD4.digest pwd
       end
 
+      # Generate a NTLMv2 Hash
+      # @param [String] user The username
+      # @param [String] password The password
+      # @param [String] target The domain or workstaiton to authenticate to
+      # @option opt :unicode (false) Unicode encode the domain
       def ntlmv2_hash(user, password, target, opt={})
         ntlmhash = ntlm_hash(password, opt)
         userdomain = (user + target).upcase
@@ -159,7 +184,6 @@ module Net  #:nodoc:
         OpenSSL::HMAC.digest(OpenSSL::Digest::MD5.new, ntlmhash, userdomain)
       end
 
-      # responses
       def lm_response(arg)
         begin
           hash = arg[:lm_hash]
@@ -254,6 +278,7 @@ module Net  #:nodoc:
 
 
     # base classes for primitives
+    # @private
     class Field
       attr_accessor :active, :value
 
@@ -296,7 +321,6 @@ module Net  #:nodoc:
         @active = (@size > 0)
       end
     end
-
 
     class Int16LE < Field
       def initialize(opt)
@@ -361,34 +385,44 @@ module Net  #:nodoc:
     # base class of data structure
     class FieldSet
       class << FieldSet
-        def define(&block)
-          c = Class.new(self)
-          def c.inherited(subclass)
-            proto = @proto
-            subclass.instance_eval {
-              @proto = proto
-            }
-          end
-          c.module_eval(&block)
-          c
-        end
         
+        
+        # @macro string_security_buffer
+        #   @method $1
+        #   @method $1=
+        #   @return [String]
         def string(name, opts)
           add_field(name, String, opts)
         end
         
+        # @macro int16le_security_buffer
+        #   @method $1
+        #   @method $1=
+        #   @return [Int16LE]
         def int16LE(name, opts)
           add_field(name, Int16LE, opts)
         end
 
+        # @macro int32le_security_buffer
+        #   @method $1
+        #   @method $1=
+        #   @return [Int32LE]
         def int32LE(name, opts)
           add_field(name, Int32LE, opts)
         end
 
+        # @macro int64le_security_buffer
+        #   @method $1
+        #   @method $1=
+        #   @return [Int64]
         def int64LE(name, opts)
           add_field(name, Int64LE, opts)
         end
         
+        # @macro security_buffer
+        #   @method $1
+        #   @method $1=
+        #   @return [SecurityBuffer]
         def security_buffer(name, opts)
           add_field(name, SecurityBuffer, opts)
         end
@@ -466,8 +500,7 @@ module Net  #:nodoc:
       end
     end
 
-
-    Blob = FieldSet.define {
+    class Blob < FieldSet
       int32LE    :blob_signature,   {:value => BLOB_SIGN}
       int32LE    :reserved,         {:value => 0}
       int64LE    :timestamp,      {:value => 0}
@@ -475,15 +508,14 @@ module Net  #:nodoc:
       int32LE    :unknown1,     {:value => 0}
       string     :target_info,      {:value => "", :size => 0}
       int32LE    :unknown2,         {:value => 0}
-    }
+    end
 
-    SecurityBuffer = FieldSet.define {
+    class SecurityBuffer < FieldSet
+
       int16LE   :length,        {:value => 0}
       int16LE   :allocated,     {:value => 0}
       int32LE   :offset,        {:value => 0}
-    }
 
-    class SecurityBuffer
       attr_accessor :active
       def initialize(opts)
         super()
@@ -519,7 +551,8 @@ module Net  #:nodoc:
         @active ? @value.size : 0
       end
     end
-    
+
+    # @private false
     class Message < FieldSet
       class << Message
         def parse(str)
@@ -579,8 +612,6 @@ module Net  #:nodoc:
       end
       
 
-      private
-
       def security_buffers
         @alist.find_all{|n, f| f.instance_of?(SecurityBuffer)}
       end
@@ -597,23 +628,25 @@ module Net  #:nodoc:
       end
 
       # sub class definitions
-      
-      Type0 = Message.define {
+      class Type0 < Message
         string        :sign,      {:size => 8, :value => SSP_SIGN}
         int32LE       :type,      {:value => 0}
-      }
-      
-      Type1 = Message.define {
+      end
+
+      # @private false
+      class Type1 < Message
+
         string          :sign,         {:size => 8, :value => SSP_SIGN}
         int32LE         :type,         {:value => 1}
         int32LE         :flag,         {:value => DEFAULT_FLAGS[:TYPE1] }
         security_buffer :domain,       {:value => ""}
         security_buffer :workstation,  {:value => Socket.gethostname }
         string          :padding,      {:size => 0, :value => "", :active => false }
-      }
 
-      class Type1
         class << Type1
+          # Parses a Type 1 Message
+          # @param [String] str A string containing Type 1 data 
+          # @return [Type1] The parsed Type 1 message
           def parse(str)
             t = new
             t.parse(str)
@@ -621,6 +654,7 @@ module Net  #:nodoc:
           end
         end
         
+        # @!visibility private
         def parse(str)
           super(str)
           enable(:domain) if has_flag?(:DOMAIN_SUPPLIED)
@@ -633,7 +667,10 @@ module Net  #:nodoc:
         end
       end
       
-      Type2 = Message.define{
+
+      # @private false
+      class Type2 < Message
+
         string        :sign,         {:size => 8, :value => SSP_SIGN}
         int32LE       :type,      {:value => 2}
         security_buffer   :target_name,  {:size => 0, :value => ""}
@@ -642,17 +679,19 @@ module Net  #:nodoc:
         int64LE           :context,      {:value => 0, :active => false}
         security_buffer   :target_info,  {:value => "", :active => false}
         string        :padding,   {:size => 0, :value => "", :active => false }
-      }
-      
-      class Type2
+
         class << Type2
+          # Parse a Type 2 packet
+          # @param [String] str A string containing Type 2 data 
+          # @return [Type2]
           def parse(str)
             t = new
             t.parse(str)
             t
           end
         end
-        
+
+        # @!visibility private
         def parse(str)
           super(str)
           if has_flag?(:TARGET_INFO)
@@ -665,7 +704,16 @@ module Net  #:nodoc:
             super(str)
           end
         end
-        
+
+        # Generates a Type 3 response based on the Type 2 Information
+        # @return [Type3]
+        # @option arg [String] :username The username to authenticate with
+        # @option arg [String] :password The user's password
+        # @option arg [String] :domain ('') The domain to authenticate to
+        # @option opt [String] :workstation (Socket.gethostname) The name of the calling workstation
+        # @option opt [Boolean] :use_default_target (False) Use the domain supplied by the server in the Type 2 packet
+        # @note An empty :domain option authenticates to the local machine.
+        # @note The :use_default_target has presidence over the :domain option
         def response(arg, opt = {})
           usr = arg[:user]
           pwd = arg[:password]
@@ -677,7 +725,7 @@ module Net  #:nodoc:
           if opt[:workstation]
             ws = opt[:workstation]
           else
-            ws = ""
+            ws = Socket.gethostname
           end
           
           if opt[:client_challenge]
@@ -692,6 +740,7 @@ module Net  #:nodoc:
             usr = NTLM::decode_utf16le(usr)
             pwd = NTLM::decode_utf16le(pwd)
             ws  = NTLM::decode_utf16le(ws)
+            domain = NTLM::decode_utf16le(domain)
             opt[:unicode] = false
           end
 
@@ -699,7 +748,12 @@ module Net  #:nodoc:
             usr = NTLM::encode_utf16le(usr)
             pwd = NTLM::encode_utf16le(pwd)
             ws  = NTLM::encode_utf16le(ws)
+            domain = NTLM::encode_utf16le(domain)
             opt[:unicode] = true
+          end
+
+          if opt[:use_default_target]
+            domain = self.target_name
           end
 
           ti = self.target_info
@@ -729,8 +783,9 @@ module Net  #:nodoc:
         end
       end
       
-            
-      Type3 = Message.define{
+      # @private false
+      class Type3 < Message
+
         string          :sign,          {:size => 8, :value => SSP_SIGN}
         int32LE         :type,          {:value => 3}
         security_buffer :lm_response,   {:value => ""}
@@ -740,16 +795,26 @@ module Net  #:nodoc:
         security_buffer :workstation,   {:value => ""}
         security_buffer :session_key,   {:value => "", :active => false }
         int64LE         :flag,          {:value => 0, :active => false }
-      }
-      
-      class Type3
+
         class << Type3
+          # Parse a Type 3 packet
+          # @param [String] str A string containing Type 3 data 
+          # @return [Type2]
           def parse(str)
             t = new
             t.parse(str)
             t
           end
-        
+          
+          # Builds a Type 3 packet
+          # @note All options must be properly encoded with either unicode or oem encoding
+          # @return [Type3]
+          # @option arg [String] :lm_response The LM hash
+          # @option arg [String] :ntlm_response The NTLM hash
+          # @option arg [String] :domain The domain to authenticate to
+          # @option arg [String] :workstation The name of the calling workstation
+          # @option arg [String] :session_key The session key
+          # @option arg [Integer] :flag Flags for the packet
           def create(arg, opt ={})
             t = new
             t.lm_response = arg[:lm_response]
@@ -759,14 +824,13 @@ module Net  #:nodoc:
 
             if arg[:workstation]
               t.workstation = arg[:workstation] 
-            else
-              t.workstation = NTLM.encode_utf16le(Socket.gethostname)
             end
 
             if arg[:session_key]
               t.enable(:session_key)
               t.session_key = arg[session_key]
             end
+
             if arg[:flag]
               t.enable(:session_key)
               t.enable(:flag)
