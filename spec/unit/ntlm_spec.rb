@@ -65,7 +65,7 @@ describe Net::NTLM::Message do
       type3_known.enable(:session_key)
       type3_known.enable(:flag)
 
-      t3 = t2.response({:user => 'vagrant', :password => 'vagrant', :workstation => 'kobe.local', :domain => ''}, {:ntlmv2 => true})
+      t3 = t2.response({:user => 'vagrant', :password => 'vagrant', :domain => ''}, {:ntlmv2 => true, :workstation => 'kobe.local'})
       t3.domain.should == type3_known.domain
       t3.flag.should == type3_known.flag
       t3.sign.should == "NTLMSSP\0"
