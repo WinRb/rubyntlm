@@ -1,10 +1,21 @@
 require "bundler/gem_tasks"
-require 'rake/testtask'
 
-task :default => [:test]
+task :default => [:spec]
 
-Rake::TestTask.new(:test) do |t|
-  t.test_files = FileList[ "test/*.rb" ]
-  t.warning = true
-  t.verbose = true
+
+require 'rspec/core/rake_task'
+ 
+desc 'Default: run specs.'
+task :default => :spec
+ 
+desc "Run specs unit tests"
+RSpec::Core::RakeTask.new do |t|
+  t.pattern = "./spec/unit/*_spec.rb" 
+end
+ 
+desc "Generate code coverage"
+RSpec::Core::RakeTask.new(:coverage) do |t|
+  t.pattern = "./spec/unit/*_spec.rb"  # don't need this, it's default.
+  t.rcov = true
+  t.rcov_opts = ['--exclude', 'spec']
 end
