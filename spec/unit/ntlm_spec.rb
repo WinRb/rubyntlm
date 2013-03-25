@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 $:.unshift(File.expand_path(File.dirname(__FILE__) << '../lib'))
 require 'net/ntlm'
 
@@ -33,7 +35,7 @@ describe Net::NTLM::Message do
       t2.flag.should == 42631685
       t2.padding.should == ("\x06\x01\xB1\x1D\0\0\0\x0F".force_encoding('ASCII-8BIT'))
       t2.sign.should == "NTLMSSP\0"
-      Net::NTLM.decode_utf16le(t2.target_info).should == "\x02\x1CVAGRANT-2008R2\x01\x1CVAGRANT-2008R2\x04\x1Cvagrant-2008R2\x03\x1Cvagrant-2008R2\a\b\0\0"
+      Net::NTLM.decode_utf16le(t2.target_info).should == "\u0002\u001CVAGRANT-2008R2\u0001\u001CVAGRANT-2008R2\u0004\u001Cvagrant-2008R2\u0003\u001Cvagrant-2008R2\a\b፤ᐝ❴ǎ\u0000\u0000"
       Net::NTLM.decode_utf16le(t2.target_name).should == "VAGRANT-2008R2"
       t2.type.should == 2
     end
@@ -65,12 +67,14 @@ describe Net::NTLM::Message do
       type3_known.enable(:session_key)
       type3_known.enable(:flag)
 
-      t3 = t2.response({:user => 'vagrant', :password => 'vagrant', :domain => ''}, {:ntlmv2 => true, :workstation => 'kobe.local'})
+      t3 = t2.response({:user => 'vagrant', :password => 'vagrant', :domain => ''}, {:ntlmv2 => true, :workstation =>  'kobe.local'})
       t3.domain.should == type3_known.domain
       t3.flag.should == type3_known.flag
       t3.sign.should == "NTLMSSP\0"
-      t3.workstation.should == "k\0o\0b\0e\0.\0l\0o\0c\0a\0l\0"
-      t3.user.should == "v\0a\0g\0r\0a\0n\0t\0"
+
+      t3.workstation.should == Net::NTLM.encode_utf16le('kobe.local')
+      #binding.pry
+      t3.user.should == Net::NTLM.encode_utf16le('vagrant')
       t3.session_key.should == ''
     end
   end

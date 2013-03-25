@@ -1,3 +1,4 @@
+# encoding: UTF-8
 #
 # = net/ntlm.rb
 #
@@ -47,6 +48,10 @@ require 'openssl'
 require 'openssl/digest'
 require 'kconv'
 require 'socket'
+
+if RUBY_VERSION.to_f == 1.8
+  require 'iconv'
+end
 
 module Net
   module NTLM
@@ -101,25 +106,33 @@ module Net
       # Decode a UTF16 string to a ASCII string
       # @param [String] str The string to convert
       def decode_utf16le(str)
-        Kconv.kconv(swap16(str), Kconv::ASCII, Kconv::UTF16)
+        if RUBY_VERSION.to_f >= 1.9
+          str.encode(Encoding::UTF_8, Encoding::UTF_16LE)
+        else
+          Iconv.conv('UTF-16LE', 'UTF-8' , str.encode('UTF-8'))
+        end
       end
 
       # Encodes a ASCII string to a UTF16 string
       # @param [String] str The string to convert
+      # @note This implementation may seem stupid but the problem is that UTF16-LE and UTF-8 are incompatiable
+      #   encodings. This library uses string contatination to build the packet bytes. The end result is that 
+      #   you can either marshal the encodings elsewhere of simply know that each time you call encode_utf16le
+      #   the function will convert the string bytes to UTF-16LE and note the encoding as UTF-8 so that byte 
+      #   concatination works seamlessly.
       def encode_utf16le(str)
-        swap16(Kconv.kconv(str, Kconv::UTF16, Kconv::ASCII))
+        str = str.force_encoding('UTF-8') if [::Encoding::ASCII_8BIT,::Encoding::US_ASCII].include?(str.encoding)
+        if RUBY_VERSION.to_f >= 1.9
+          str.force_encoding('UTF-8').encode(Encoding::UTF_16LE, Encoding::UTF_8).force_encoding('UTF-8')
+        else
+          Iconv.conv('UTF-16LE', 'UTF-8' , str.encode('UTF-8')).force_encoding('UTF-8')
+        end
       end
       
       # Conver the value to a 64-Bit Little Endian Int
       # @param [String] val The string to convert
       def pack_int64le(val)
           [val & 0x00000000ffffffff, val >> 32].pack("V2")
-      end
-      
-      # Taggle the strings endianness between big/little and little/big 
-      # @param [String] str The string to swap the endianness on
-      def swap16(str)
-        str.unpack("v*").pack("n*")
       end
 
       # Builds an array of strings that are 7 characters long
@@ -725,7 +738,7 @@ module Net
           if opt[:workstation]
             ws = opt[:workstation]
           else
-            ws = Socket.gethostname
+            ws = Socket.gethostname.force_encoding('UTF-8')
           end
           
           if opt[:client_challenge]
