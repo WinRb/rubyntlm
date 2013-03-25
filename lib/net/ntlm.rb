@@ -1,3 +1,4 @@
+# encoding: UTF-8
 #
 # = net/ntlm.rb
 #
@@ -45,7 +46,6 @@
 require 'base64'
 require 'openssl'
 require 'openssl/digest'
-require 'kconv'
 require 'socket'
 
 module Net
@@ -101,25 +101,25 @@ module Net
       # Decode a UTF16 string to a ASCII string
       # @param [String] str The string to convert
       def decode_utf16le(str)
-        Kconv.kconv(swap16(str), Kconv::ASCII, Kconv::UTF16)
+        str.encode(Encoding::UTF_8, Encoding::UTF_16LE).force_encoding('UTF-8')
       end
 
       # Encodes a ASCII string to a UTF16 string
       # @param [String] str The string to convert
+      # @note This implementation may seem stupid but the problem is that UTF16-LE and UTF-8 are incompatiable
+      #   encodings. This library uses string contatination to build the packet bytes. The end result is that 
+      #   you can either marshal the encodings elsewhere of simply know that each time you call encode_utf16le
+      #   the function will convert the string bytes to UTF-16LE and note the encoding as UTF-8 so that byte 
+      #   concatination works seamlessly.
       def encode_utf16le(str)
-        swap16(Kconv.kconv(str, Kconv::UTF16, Kconv::ASCII))
+        str = str.force_encoding('UTF-8') if [::Encoding::ASCII_8BIT,::Encoding::US_ASCII].include?(str.encoding)
+        str.force_encoding('UTF-8').encode(Encoding::UTF_16LE, Encoding::UTF_8).force_encoding('UTF-8')
       end
       
       # Conver the value to a 64-Bit Little Endian Int
       # @param [String] val The string to convert
       def pack_int64le(val)
           [val & 0x00000000ffffffff, val >> 32].pack("V2")
-      end
-      
-      # Taggle the strings endianness between big/little and little/big 
-      # @param [String] str The string to swap the endianness on
-      def swap16(str)
-        str.unpack("v*").pack("n*")
       end
 
       # Builds an array of strings that are 7 characters long

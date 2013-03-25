@@ -1,3 +1,4 @@
+# encoding: UTF-8
 $:.unshift(File.expand_path(File.dirname(__FILE__) << '../lib'))
 require 'net/ntlm'
 
@@ -33,7 +34,7 @@ describe Net::NTLM::Message do
       t2.flag.should == 42631685
       t2.padding.should == ("\x06\x01\xB1\x1D\0\0\0\x0F".force_encoding('ASCII-8BIT'))
       t2.sign.should == "NTLMSSP\0"
-      Net::NTLM.decode_utf16le(t2.target_info).should == "\x02\x1CVAGRANT-2008R2\x01\x1CVAGRANT-2008R2\x04\x1Cvagrant-2008R2\x03\x1Cvagrant-2008R2\a\b\0\0"
+      Net::NTLM.decode_utf16le(t2.target_info).should == "\u0002\u001CVAGRANT-2008R2\u0001\u001CVAGRANT-2008R2\u0004\u001Cvagrant-2008R2\u0003\u001Cvagrant-2008R2\a\b፤ᐝ❴ǎ\0\0"
       Net::NTLM.decode_utf16le(t2.target_name).should == "VAGRANT-2008R2"
       t2.type.should == 2
     end
