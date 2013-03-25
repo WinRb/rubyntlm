@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rubyntlm (0.2.0)
+    rubyntlm (0.3.0)
 
 GEM
   remote: https://rubygems.org/
