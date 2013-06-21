@@ -95,26 +95,50 @@ module Net
       :TYPE3 => FLAGS[:UNICODE] | FLAGS[:REQUEST_TARGET] | FLAGS[:NTLM] | FLAGS[:ALWAYS_SIGN] | FLAGS[:NTLM2_KEY]
     }
 
+    class EncodeUtil
+      if RUBY_VERSION == "1.8.7"
+        require "kconv"
+
+        # Decode a UTF16 string to a ASCII string
+        # @param [String] str The string to convert
+        def self.decode_utf16le(str)
+          Kconv.kconv(swap16(str), Kconv::ASCII, Kconv::UTF16)
+        end
+
+        # Encodes a ASCII string to a UTF16 string
+        # @param [String] str The string to convert
+        def self.encode_utf16le(str)
+          swap16(Kconv.kconv(str, Kconv::UTF16, Kconv::ASCII))
+        end
+
+        # Taggle the strings endianness between big/little and little/big
+        # @param [String] str The string to swap the endianness on
+        def self.swap16(str)
+          str.unpack("v*").pack("n*")
+        end
+      else # Use native 1.9 string encoding functions
+
+        # Decode a UTF16 string to a ASCII string
+        # @param [String] str The string to convert
+        def self.decode_utf16le(str)
+          str.encode(Encoding::UTF_8, Encoding::UTF_16LE).force_encoding('UTF-8')
+        end
+
+        # Encodes a ASCII string to a UTF16 string
+        # @param [String] str The string to convert
+        # @note This implementation may seem stupid but the problem is that UTF16-LE and UTF-8 are incompatiable
+        #   encodings. This library uses string contatination to build the packet bytes. The end result is that
+        #   you can either marshal the encodings elsewhere of simply know that each time you call encode_utf16le
+        #   the function will convert the string bytes to UTF-16LE and note the encoding as UTF-8 so that byte
+        #   concatination works seamlessly.
+        def self.encode_utf16le(str)
+          str = str.force_encoding('UTF-8') if [::Encoding::ASCII_8BIT,::Encoding::US_ASCII].include?(str.encoding)
+          str.force_encoding('UTF-8').encode(Encoding::UTF_16LE, Encoding::UTF_8).force_encoding('UTF-8')
+        end
+      end
+    end
 
     class << self
-
-      # Decode a UTF16 string to a ASCII string
-      # @param [String] str The string to convert
-      def decode_utf16le(str)
-        str.encode(Encoding::UTF_8, Encoding::UTF_16LE).force_encoding('UTF-8')
-      end
-
-      # Encodes a ASCII string to a UTF16 string
-      # @param [String] str The string to convert
-      # @note This implementation may seem stupid but the problem is that UTF16-LE and UTF-8 are incompatiable
-      #   encodings. This library uses string contatination to build the packet bytes. The end result is that
-      #   you can either marshal the encodings elsewhere of simply know that each time you call encode_utf16le
-      #   the function will convert the string bytes to UTF-16LE and note the encoding as UTF-8 so that byte
-      #   concatination works seamlessly.
-      def encode_utf16le(str)
-        str = str.force_encoding('UTF-8') if [::Encoding::ASCII_8BIT,::Encoding::US_ASCII].include?(str.encoding)
-        str.force_encoding('UTF-8').encode(Encoding::UTF_16LE, Encoding::UTF_8).force_encoding('UTF-8')
-      end
 
       # Conver the value to a 64-Bit Little Endian Int
       # @param [String] val The string to convert
@@ -165,7 +189,7 @@ module Net
       def ntlm_hash(password, opt = {})
         pwd = password.dup
         unless opt[:unicode]
-          pwd = encode_utf16le(pwd)
+          pwd = EncodeUtil.encode_utf16le(pwd)
         end
         OpenSSL::Digest::MD4.digest pwd
       end
@@ -179,7 +203,7 @@ module Net
         ntlmhash = ntlm_hash(password, opt)
         userdomain = (user + target).upcase
         unless opt[:unicode]
-          userdomain = encode_utf16le(userdomain)
+          userdomain = EncodeUtil.encode_utf16le(userdomain)
         end
         OpenSSL::HMAC.digest(OpenSSL::Digest::MD5.new, ntlmhash, userdomain)
       end
@@ -737,18 +761,18 @@ module Net
           opt[:client_challenge] = cc
 
           if has_flag?(:OEM) and opt[:unicode]
-            usr = NTLM::decode_utf16le(usr)
-            pwd = NTLM::decode_utf16le(pwd)
-            ws  = NTLM::decode_utf16le(ws)
-            domain = NTLM::decode_utf16le(domain)
+            usr = NTLM::EncodeUtil.decode_utf16le(usr)
+            pwd = NTLM::EncodeUtil.decode_utf16le(pwd)
+            ws  = NTLM::EncodeUtil.decode_utf16le(ws)
+            domain = NTLM::EncodeUtil.decode_utf16le(domain)
             opt[:unicode] = false
           end
 
           if has_flag?(:UNICODE) and !opt[:unicode]
-            usr = NTLM::encode_utf16le(usr)
-            pwd = NTLM::encode_utf16le(pwd)
-            ws  = NTLM::encode_utf16le(ws)
-            domain = NTLM::encode_utf16le(domain)
+            usr = NTLM::EncodeUtil.encode_utf16le(usr)
+            pwd = NTLM::EncodeUtil.encode_utf16le(pwd)
+            ws  = NTLM::EncodeUtil.encode_utf16le(ws)
+            domain = NTLM::EncodeUtil.encode_utf16le(domain)
             opt[:unicode] = true
           end
 
