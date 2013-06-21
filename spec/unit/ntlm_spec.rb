@@ -32,10 +32,19 @@ describe Net::NTLM::Message do
       t2.challenge.should == 14872292244261496103
       t2.context.should == 0
       t2.flag.should == 42631685
-      t2.padding.should == ("\x06\x01\xB1\x1D\0\0\0\x0F".force_encoding('ASCII-8BIT'))
+      if "".respond_to?(:force_encoding)
+        t2.padding.should == ("\x06\x01\xB1\x1D\0\0\0\x0F".force_encoding('ASCII-8BIT'))
+      end
       t2.sign.should == "NTLMSSP\0"
-      Net::NTLM.decode_utf16le(t2.target_info).should == "\u0002\u001CVAGRANT-2008R2\u0001\u001CVAGRANT-2008R2\u0004\u001Cvagrant-2008R2\u0003\u001Cvagrant-2008R2\a\b፤ᐝ❴ǎ\0\0"
-      Net::NTLM.decode_utf16le(t2.target_name).should == "VAGRANT-2008R2"
+
+      t2_target_info = Net::NTLM::EncodeUtil.decode_utf16le(t2.target_info)
+      if RUBY_VERSION == "1.8.7"
+        t2_target_info.should == "\x02\x1CVAGRANT-2008R2\x01\x1CVAGRANT-2008R2\x04\x1Cvagrant-2008R2\x03\x1Cvagrant-2008R2\a\b\e$(D+&\e(B\0\0"
+      else
+        t2_target_info.should == "\u0002\u001CVAGRANT-2008R2\u0001\u001CVAGRANT-2008R2\u0004\u001Cvagrant-2008R2\u0003\u001Cvagrant-2008R2\a\b፤ᐝ❴ǎ\0\0"
+      end
+
+      Net::NTLM::EncodeUtil.decode_utf16le(t2.target_name).should == "VAGRANT-2008R2"
       t2.type.should == 2
     end
 
@@ -86,7 +95,7 @@ describe Net::NTLM do
   let(:client_ch) {["ffffff0011223344"].pack("H*")}
   let(:timestamp) {1055844000}
   let(:trgt_info) {[
-      "02000c0044004f004d00410049004e00" + 
+      "02000c0044004f004d00410049004e00" +
       "01000c00530045005200560045005200" +
       "0400140064006f006d00610069006e00" +
       "2e0063006f006d000300220073006500" +
@@ -100,7 +109,7 @@ describe Net::NTLM do
   end
 
   it 'should generate an ntlm_hash' do
-     Net::NTLM::ntlm_hash(passwd).should == ["cd06ca7c7e10c99b1d33b7485a2ed808"].pack("H*") 
+     Net::NTLM::ntlm_hash(passwd).should == ["cd06ca7c7e10c99b1d33b7485a2ed808"].pack("H*")
   end
 
   it 'should generate an ntlmv2_hash' do
