@@ -48,16 +48,21 @@ require 'openssl'
 require 'openssl/digest'
 require 'socket'
 
-require 'net/ntlm/blob'
-require 'net/ntlm/encode_util'
 require 'net/ntlm/field'
-require 'net/ntlm/field_set'
 require 'net/ntlm/int16_le'
 require 'net/ntlm/int32_le'
 require 'net/ntlm/int64_le'
+require 'net/ntlm/string'
+
+require 'net/ntlm/field_set'
+require 'net/ntlm/blob'
 require 'net/ntlm/message'
 require 'net/ntlm/security_buffer'
-require 'net/ntlm/string'
+
+require 'net/ntlm/encode_util'
+
+
+
 
 module Net
   module NTLM

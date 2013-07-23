@@ -1,5 +1,3 @@
-require 'net/ntlm/field_set'
-
 module Net
 module NTLM
 
