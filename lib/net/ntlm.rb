@@ -59,6 +59,10 @@ require 'net/ntlm/field_set'
 require 'net/ntlm/blob'
 require 'net/ntlm/security_buffer'
 require 'net/ntlm/message'
+require 'net/ntlm/message/type0'
+require 'net/ntlm/message/type1'
+require 'net/ntlm/message/type2'
+require 'net/ntlm/message/type3'
 
 
 require 'net/ntlm/encode_util'
