@@ -48,6 +48,7 @@ require 'openssl'
 require 'openssl/digest'
 require 'socket'
 
+# Load Order is important here
 require 'net/ntlm/field'
 require 'net/ntlm/int16_le'
 require 'net/ntlm/int32_le'
