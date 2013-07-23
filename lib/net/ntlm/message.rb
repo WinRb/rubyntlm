@@ -1,6 +1,39 @@
 module Net
 module NTLM
 
+  SSP_SIGN = "NTLMSSP\0"
+
+  FLAGS = {
+      :UNICODE              => 0x00000001,
+      :OEM                  => 0x00000002,
+      :REQUEST_TARGET       => 0x00000004,
+      :MBZ9                 => 0x00000008,
+      :SIGN                 => 0x00000010,
+      :SEAL                 => 0x00000020,
+      :NEG_DATAGRAM         => 0x00000040,
+      :NETWARE              => 0x00000100,
+      :NTLM                 => 0x00000200,
+      :NEG_NT_ONLY          => 0x00000400,
+      :MBZ7                 => 0x00000800,
+      :DOMAIN_SUPPLIED      => 0x00001000,
+      :WORKSTATION_SUPPLIED => 0x00002000,
+      :LOCAL_CALL           => 0x00004000,
+      :ALWAYS_SIGN          => 0x00008000,
+      :TARGET_TYPE_DOMAIN   => 0x00010000,
+      :TARGET_INFO          => 0x00800000,
+      :NTLM2_KEY            => 0x00080000,
+      :KEY128               => 0x20000000,
+      :KEY56                => 0x80000000
+  }.freeze
+
+  FLAG_KEYS = FLAGS.keys.sort{|a, b| FLAGS[a] <=> FLAGS[b] }
+
+  DEFAULT_FLAGS = {
+      :TYPE1 => FLAGS[:UNICODE] | FLAGS[:OEM] | FLAGS[:REQUEST_TARGET] | FLAGS[:NTLM] | FLAGS[:ALWAYS_SIGN] | FLAGS[:NTLM2_KEY],
+      :TYPE2 => FLAGS[:UNICODE],
+      :TYPE3 => FLAGS[:UNICODE] | FLAGS[:REQUEST_TARGET] | FLAGS[:NTLM] | FLAGS[:ALWAYS_SIGN] | FLAGS[:NTLM2_KEY]
+  }
+
 
   # @private false
   class Message < FieldSet
