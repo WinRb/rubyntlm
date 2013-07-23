@@ -9,6 +9,7 @@ module NTLM
     def initialize(opts)
       @value  = opts[:value]
       @active = opts[:active].nil? ? true : opts[:active]
+      @size   = opts[:size].nil? ? 0 : opts[:size]
     end
 
     def size
