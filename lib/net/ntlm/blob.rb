@@ -1,5 +1,9 @@
+require 'net/ntlm/field_set'
+
 module Net
   module NTLM
+
+    BLOB_SIGN = 0x00000101
 
     class Blob < FieldSet
       int32LE    :blob_signature,   {:value => BLOB_SIGN}

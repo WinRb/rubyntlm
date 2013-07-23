@@ -1,3 +1,10 @@
+require 'net/ntlm/int16_le'
+require 'net/ntlm/int32_le'
+require 'net/ntlm/int64_le'
+require 'net/ntlm/security_buffer'
+require 'net/ntlm/string'
+
+
 module Net
   module NTLM
 
@@ -11,7 +18,7 @@ module Net
         #   @method $1=
         #   @return [String]
         def string(name, opts)
-          add_field(name, String, opts)
+          add_field(name, Net::NTLM::String, opts)
         end
 
         # @macro int16le_security_buffer
@@ -19,7 +26,7 @@ module Net
         #   @method $1=
         #   @return [Int16LE]
         def int16LE(name, opts)
-          add_field(name, Int16LE, opts)
+          add_field(name, Net::NTLM::Int16LE, opts)
         end
 
         # @macro int32le_security_buffer
@@ -27,7 +34,7 @@ module Net
         #   @method $1=
         #   @return [Int32LE]
         def int32LE(name, opts)
-          add_field(name, Int32LE, opts)
+          add_field(name, Net::NTLM::Int32LE, opts)
         end
 
         # @macro int64le_security_buffer
@@ -35,7 +42,7 @@ module Net
         #   @method $1=
         #   @return [Int64]
         def int64LE(name, opts)
-          add_field(name, Int64LE, opts)
+          add_field(name, Net::NTLM::Int64LE, opts)
         end
 
         # @macro security_buffer
@@ -43,7 +50,7 @@ module Net
         #   @method $1=
         #   @return [SecurityBuffer]
         def security_buffer(name, opts)
-          add_field(name, SecurityBuffer, opts)
+          add_field(name, Net::NTLM::SecurityBuffer, opts)
         end
 
         def prototypes

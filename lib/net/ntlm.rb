@@ -48,6 +48,17 @@ require 'openssl'
 require 'openssl/digest'
 require 'socket'
 
+require 'net/ntlm/blob'
+require 'net/ntlm/encode_util'
+require 'net/ntlm/field'
+require 'net/ntlm/field_set'
+require 'net/ntlm/int16_le'
+require 'net/ntlm/int32_le'
+require 'net/ntlm/int64_le'
+require 'net/ntlm/message'
+require 'net/ntlm/security_buffer'
+require 'net/ntlm/string'
+
 module Net
   module NTLM
     # @private
@@ -59,7 +70,7 @@ module Net
     end
 
     SSP_SIGN = "NTLMSSP\0"
-    BLOB_SIGN = 0x00000101
+
     LM_MAGIC = "KGS!@\#$%"
     TIME_OFFSET = 11644473600
     MAX64 = 0xffffffffffffffff
@@ -256,22 +267,6 @@ module Net
         [cc.ljust(24, "\0"), response]
       end
     end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   end
 end
