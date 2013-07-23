@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'lib', 'net', 'ntlm')
+require File.join(File.dirname(__FILE__), 'lib', 'net', 'ntlm', 'version')
 
 Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY

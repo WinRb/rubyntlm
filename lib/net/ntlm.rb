@@ -68,15 +68,6 @@ require 'net/ntlm/encode_util'
 
 module Net
   module NTLM
-    # @private
-    module VERSION
-      MAJOR = 0
-      MINOR = 3
-      TINY  = 3
-      STRING = [MAJOR, MINOR, TINY].join('.')
-    end
-
-
 
     LM_MAGIC = "KGS!@\#$%"
     TIME_OFFSET = 11644473600
