@@ -1,35 +1,18 @@
-require 'rspec'
-require 'net/ntlm'
+require 'spec_helper'
 
 describe Net::NTLM::Field do
 
-  subject do
-    Net::NTLM::Field.new({
-      :value => 'Foo',
-      :active => false
-    })
-  end
-
-  it { should respond_to :active}
-  it { should respond_to :value}
-  it { should respond_to :size}
+  it_behaves_like 'a field', 'Foo', false
 
   context 'with no size specified' do
-    it 'should set the value from initialize options' do
-      subject.value.should == 'Foo'
-    end
-
-    it 'should set active from initialize options' do
-      subject.active.should == false
-    end
-
+    let (:field_without_size) { Net::NTLM::Field.new({ :value => 'Foo', :active => true }) }
     it 'should set size to 0 if not active' do
-      subject.size.should == 0
+      field_without_size.size.should == 0
     end
 
     it 'should return 0 if active but no size specified' do
-      subject.active = true
-      subject.size.should == 0
+      field_without_size.active = true
+      field_without_size.size.should == 0
     end
   end
 
@@ -44,7 +27,6 @@ describe Net::NTLM::Field do
       field_with_size.active = false
       field_with_size.size.should == 0
     end
-
   end
 
 

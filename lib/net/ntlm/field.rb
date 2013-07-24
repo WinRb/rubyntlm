@@ -15,6 +15,19 @@ module NTLM
     def size
       @active ? @size : 0
     end
+
+    # Serializer function for field data
+    # Exists in this class to be overridden by child classes
+    def serialize
+      raise NotImplementedError
+    end
+
+    # Parser function for field data
+    # Exists in this class to be overridden by child classes
+    def parse(str, offset=0)
+      raise NotImplementedError
+    end
+
   end
 
 
