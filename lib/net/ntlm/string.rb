@@ -18,7 +18,7 @@ module Net
 
       def serialize
         if @active
-          @value
+          @value.to_s
         else
           ""
         end
