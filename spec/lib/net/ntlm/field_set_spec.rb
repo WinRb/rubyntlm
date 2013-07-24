@@ -17,61 +17,185 @@ describe Net::NTLM::FieldSet do
     it { should respond_to :types }
     it { should respond_to :opts }
 
-    it 'should add a String Field correctly' do
-      fieldset_class.string(:test_string, { :value => 'Test'})
-      fieldset_class.prototypes.should include([:test_string, Net::NTLM::String, {:value=>"Test"}])
-      fieldset_class.names.should include(:test_string)
-      fieldset_class.types.should include(Net::NTLM::String)
-      fieldset_class.opts.should include({:value => 'Test'})
-      fieldset_object = fieldset_class.new
-      fieldset_object.should respond_to :test_string
-      fieldset_object.test_string.should == 'Test'
+    context 'adding a String Field' do
+      before(:each) do
+        fieldset_class.string(:test_string, { :value => 'Test'})
+      end
+
+      it 'should set the prototypes correctly' do
+        fieldset_class.prototypes.should include([:test_string, Net::NTLM::String, {:value=>"Test"}])
+      end
+
+      it 'should set the names correctly' do
+        fieldset_class.names.should include(:test_string)
+      end
+
+      it 'should set the types correctly' do
+        fieldset_class.types.should include(Net::NTLM::String)
+      end
+
+      it 'should set the opts correctly' do
+        fieldset_class.opts.should include({:value => 'Test'})
+      end
+
+      context 'when creating an instance' do
+        let(:fieldset_object) do
+          fieldset_class.new
+        end
+
+        it 'should have the new accessor' do
+          fieldset_object.should respond_to :test_string
+        end
+
+        it 'should have the correct default value' do
+          fieldset_object.test_string.should == 'Test'
+        end
+      end
     end
 
-    it 'should add a Int16LE Field correctly' do
-      fieldset_class.int16LE(:test_int, { :value => 15})
-      fieldset_class.prototypes.should include([:test_int, Net::NTLM::Int16LE, {:value=> 15}])
-      fieldset_class.names.should include(:test_int)
-      fieldset_class.types.should include(Net::NTLM::Int16LE)
-      fieldset_class.opts.should include({:value => 15})
-      fieldset_object = fieldset_class.new
-      fieldset_object.should respond_to :test_int
-      fieldset_object.test_string.should == 15
+    context 'adding a Int16LE Field' do
+      before(:each) do
+        fieldset_class.int16LE(:test_int, { :value => 15})
+      end
+
+      it 'should set the prototypes correctly' do
+        fieldset_class.prototypes.should include([:test_int, Net::NTLM::Int16LE, {:value=>15}])
+      end
+
+      it 'should set the names correctly' do
+        fieldset_class.names.should include(:test_int)
+      end
+
+      it 'should set the types correctly' do
+        fieldset_class.types.should include(Net::NTLM::Int16LE)
+      end
+
+      it 'should set the opts correctly' do
+        fieldset_class.opts.should include({:value => 15})
+      end
+
+      context 'when creating an instance' do
+        let(:fieldset_object) do
+          fieldset_class.new
+        end
+
+        it 'should have the new accessor' do
+          fieldset_object.should respond_to :test_int
+        end
+
+        it 'should have the correct default value' do
+          fieldset_object.test_int.should == 15
+        end
+      end
     end
 
-    it 'should add a Int32LE Field correctly' do
-      fieldset_class.int32LE(:test_int, { :value => 15})
-      fieldset_class.prototypes.should include([:test_int, Net::NTLM::Int32LE, {:value=> 15}])
-      fieldset_class.names.should include(:test_int)
-      fieldset_class.types.should include(Net::NTLM::Int32LE)
-      fieldset_class.opts.should include({:value => 15})
-      fieldset_object = fieldset_class.new
-      fieldset_object.should respond_to :test_int
-      fieldset_object.test_string.should == 15
+    context 'adding a Int32LE Field' do
+      before(:each) do
+        fieldset_class.int32LE(:test_int, { :value => 15})
+      end
+
+      it 'should set the prototypes correctly' do
+        fieldset_class.prototypes.should include([:test_int, Net::NTLM::Int32LE, {:value=>15}])
+      end
+
+      it 'should set the names correctly' do
+        fieldset_class.names.should include(:test_int)
+      end
+
+      it 'should set the types correctly' do
+        fieldset_class.types.should include(Net::NTLM::Int32LE)
+      end
+
+      it 'should set the opts correctly' do
+        fieldset_class.opts.should include({:value => 15})
+      end
+
+      context 'when creating an instance' do
+        let(:fieldset_object) do
+          fieldset_class.new
+        end
+
+        it 'should have the new accessor' do
+          fieldset_object.should respond_to :test_int
+        end
+
+        it 'should have the correct default value' do
+          fieldset_object.test_int.should == 15
+        end
+      end
     end
 
-    it 'should add a Int64LE Field correctly' do
-      fieldset_class.int64LE(:test_int, { :value => 15})
-      fieldset_class.prototypes.should include([:test_int, Net::NTLM::Int64LE, {:value=> 15}])
-      fieldset_class.names.should include(:test_int)
-      fieldset_class.types.should include(Net::NTLM::Int64LE)
-      fieldset_class.opts.should include({:value => 15})
-      fieldset_object = fieldset_class.new
-      fieldset_object.should respond_to :test_int
-      fieldset_object.test_string.should == 15
+    context 'adding a Int64LE Field' do
+      before(:each) do
+        fieldset_class.int64LE(:test_int, { :value => 15})
+      end
+
+      it 'should set the prototypes correctly' do
+        fieldset_class.prototypes.should include([:test_int, Net::NTLM::Int64LE, {:value=>15}])
+      end
+
+      it 'should set the names correctly' do
+        fieldset_class.names.should include(:test_int)
+      end
+
+      it 'should set the types correctly' do
+        fieldset_class.types.should include(Net::NTLM::Int64LE)
+      end
+
+      it 'should set the opts correctly' do
+        fieldset_class.opts.should include({:value => 15})
+      end
+
+      context 'when creating an instance' do
+        let(:fieldset_object) do
+          fieldset_class.new
+        end
+
+        it 'should have the new accessor' do
+          fieldset_object.should respond_to :test_int
+        end
+
+        it 'should have the correct default value' do
+          fieldset_object.test_int.should == 15
+        end
+      end
     end
 
-    it 'should add a SecurityBuffer Field correctly' do
-      fieldset_class.security_buffer(:test_buffer, {})
-      fieldset_class.prototypes.should include([:test_buffer, Net::NTLM::SecurityBuffer, {}])
-      fieldset_class.names.should include(:test_buffer)
-      fieldset_class.types.should include(Net::NTLM::SecurityBuffer)
-      fieldset_class.opts.should include({})
-      fieldset_object = fieldset_class.new
-      fieldset_object.should respond_to :test_int
-      fieldset_object.test_string.should == 15
-    end
+    context 'adding a SecurityBuffer Field' do
+      before(:each) do
+        fieldset_class.security_buffer(:test_buffer, { :value => 15})
+      end
 
+      it 'should set the prototypes correctly' do
+        fieldset_class.prototypes.should include([:test_buffer, Net::NTLM::SecurityBuffer, {:value=>15}])
+      end
+
+      it 'should set the names correctly' do
+        fieldset_class.names.should include(:test_buffer)
+      end
+
+      it 'should set the types correctly' do
+        fieldset_class.types.should include(Net::NTLM::SecurityBuffer)
+      end
+
+      it 'should set the opts correctly' do
+        fieldset_class.opts.should include({:value => 15})
+      end
+
+      context 'when creating an instance' do
+        let(:fieldset_object) do
+          fieldset_class.new
+        end
+
+        it 'should have the new accessor' do
+          fieldset_object.should respond_to :test_buffer
+        end
+
+        it 'should have the correct default value' do
+          fieldset_object.test_buffer.should == 15
+        end
+      end
+    end
   end
 
 end
