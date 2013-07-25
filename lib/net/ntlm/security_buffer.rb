@@ -9,7 +9,7 @@ module Net
       int32LE   :offset,        {:value => 0}
 
       attr_accessor :active
-      def initialize(opts)
+      def initialize(opts={})
         super()
         @value  = opts[:value]
         @active = opts[:active].nil? ? true : opts[:active]
