@@ -60,10 +60,5 @@ describe Net::NTLM::SecurityBuffer do
       domain_security_buffer.value.should == 'FooBarBa'
     end
 
-    it 'should take an offset to where the length definition begins' do
-      padded_string = "Blah\x08\x00\x08\x00\x08\x00\x00\x00FooBarBaz"
-      domain_security_buffer.parse(padded_string,4).should == 8
-      domain_security_buffer.value.should == 'FooBarBa'
-    end
   end
 end
