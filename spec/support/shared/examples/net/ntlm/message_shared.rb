@@ -20,17 +20,17 @@ shared_examples_for 'a message' do |flags|
   it { should respond_to :deflag }
   it { should respond_to :data_edge }
 
-  it 'should be able to check if it has a flag set' do
-    test_message.has_flag?(flags.first).should == true
+  flags.each do |flag|
+    it "should be able to check if the #{flag} flag is set" do
+      test_message.has_flag?(flags.first).should == true
+    end
   end
+
 
   it 'should be able to set a new flag' do
     test_message.set_flag(:DOMAIN_SUPPLIED)
     test_message.has_flag?(:DOMAIN_SUPPLIED).should == true
   end
 
-  it '#deflag' do
-    test_message.deflag.should == nil
-  end
 
 end
