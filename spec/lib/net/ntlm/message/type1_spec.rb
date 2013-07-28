@@ -20,4 +20,23 @@ describe Net::NTLM::Message::Type1 do
   it_behaves_like 'a fieldset', fields
   it_behaves_like 'a message', flags
 
+  let(:type1_packet) {"TlRMTVNTUAABAAAAB4IIAAAAAAAgAAAAAAAAACAAAAA="}
+
+  it 'should deserialize' do
+    t1 =  Net::NTLM::Message.decode64(type1_packet)
+    t1.class.should == Net::NTLM::Message::Type1
+    t1.domain.should == ''
+    t1.flag.should == 557575
+    t1.padding.should == ''
+    t1.sign.should  == "NTLMSSP\0"
+    t1.type.should == 1
+    t1.workstation.should == ''
+  end
+
+  it 'should serialize' do
+    t1 = Net::NTLM::Message::Type1.new
+    t1.workstation = ''
+    t1.encode64.should == type1_packet
+  end
+
 end
