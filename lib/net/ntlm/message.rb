@@ -68,7 +68,7 @@ module NTLM
     end
 
     def dump_flags
-      FLAG_KEYS.each{ |k| print(k, "=", flag?(k), "\n") }
+      FLAG_KEYS.each{ |k| print(k, "=", has_flag?(k), "\n") }
     end
 
     def serialize

@@ -200,15 +200,13 @@ shared_examples_for 'a fieldset' do |fields|
   context 'an instance' do
 
     subject(:fieldset_object) do
-      begin
-        described_class.new
       # FieldSet Base Class and Message Base Class
       # have no fields by default and thus cannot be initialized
       # currently. Clumsy workaround for now.
-      rescue NoMethodError
+      if described_class.names.empty?
         described_class.string(:test_string, { :value => 'Test', :active => true, :size => 4})
-        described_class.new
       end
+      described_class.new
     end
 
     it { should respond_to :serialize }

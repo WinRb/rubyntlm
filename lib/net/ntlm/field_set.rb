@@ -5,7 +5,6 @@ module Net
     class FieldSet
       class << FieldSet
 
-
         # @macro string_security_buffer
         #   @method $1
         #   @method $1=
@@ -51,14 +50,17 @@ module Net
         end
 
         def names
+          return [] if @proto.nil?
           @proto.map{|n, t, o| n}
         end
 
         def types
+          return [] if @proto.nil?
           @proto.map{|n, t, o| t}
         end
 
         def opts
+          return [] if @proto.nil?
           @proto.map{|n, t, o| o}
         end
 
