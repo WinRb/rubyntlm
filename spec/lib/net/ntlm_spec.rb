@@ -1,4 +1,4 @@
-# encoding: UTF-8
+
 require 'rspec'
 require 'net/ntlm'
 
@@ -18,6 +18,24 @@ describe Net::NTLM do
           "610069006e002e0063006f006d000000" +
           "0000"
   ].pack("H*")}
+  let(:padded_pwd) { passwd.upcase.ljust(14, "\0")}
+  let(:keys) { Net::NTLM.gen_keys(padded_pwd)}
+
+  it 'should convert a value to 64-bit LE Integer' do
+    Net::NTLM.pack_int64le(42).should == "\x2A\x00\x00\x00\x00\x00\x00\x00"
+  end
+
+  it 'should split a string into an array of slices, 7 chars or less' do
+    Net::NTLM.split7("HelloWorld!").should == [ 'HelloWo', 'rld!']
+  end
+
+  it 'should generate DES keys from the supplied string' do
+    Net::NTLM.gen_keys(padded_pwd).should == ["R\xA2Qk%*Qa", "1\x80\x01\x01\x01\x01\x01\x01"]
+  end
+
+  it 'should encrypt the string with DES for each key supplied' do
+    Net::NTLM::apply_des(Net::NTLM::LM_MAGIC, keys).should == ["\xFF7P\xBC\xC2\xB2$\x12", "\xC2&[#sN\r\xAC"]
+  end
 
   it 'should generate an lm_hash' do
     Net::NTLM::lm_hash(passwd).should == ["ff3750bcc2b22412c2265b23734e0dac"].pack("H*")
