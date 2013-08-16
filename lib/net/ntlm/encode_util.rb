@@ -39,7 +39,7 @@ module NTLM
       #   concatination works seamlessly.
       def self.encode_utf16le(str)
         str = str.force_encoding('UTF-8') if [::Encoding::ASCII_8BIT,::Encoding::US_ASCII].include?(str.encoding)
-        str.force_encoding('UTF-8').encode(Encoding::UTF_16LE, Encoding::UTF_8).force_encoding('UTF-8')
+        str.dup.force_encoding('UTF-8').encode(Encoding::UTF_16LE, Encoding::UTF_8).force_encoding('UTF-8')
       end
     end
   end
