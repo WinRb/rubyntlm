@@ -10,7 +10,6 @@ shared_examples_for 'a message' do |flags|
   it { should respond_to :has_flag? }
   it { should respond_to :set_flag }
   it { should respond_to :dump_flags }
-  it { should respond_to :has_flag? }
   it { should respond_to :encode64 }
   it { should respond_to :decode64 }
   it { should respond_to :head_size }
@@ -22,7 +21,7 @@ shared_examples_for 'a message' do |flags|
 
   flags.each do |flag|
     it "should be able to check if the #{flag} flag is set" do
-      test_message.has_flag?(flags.first).should == true
+      test_message.has_flag?(flag).should == true
     end
   end
 
