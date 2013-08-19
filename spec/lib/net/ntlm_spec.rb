@@ -30,11 +30,15 @@ describe Net::NTLM do
   end
 
   it 'should generate DES keys from the supplied string' do
-    Net::NTLM.gen_keys(padded_pwd).should == ["R\xA2Qk%*Qa", "1\x80\x01\x01\x01\x01\x01\x01"]
+    first_key = ["52a2516b252a5161"].pack('H*')
+    second_key = ["3180010101010101"].pack('H*')
+    Net::NTLM.gen_keys(padded_pwd).should == [first_key, second_key]
   end
 
   it 'should encrypt the string with DES for each key supplied' do
-    Net::NTLM::apply_des(Net::NTLM::LM_MAGIC, keys).should == ["\xFF7P\xBC\xC2\xB2$\x12", "\xC2&[#sN\r\xAC"]
+    first_crypt = ["ff3750bcc2b22412"].pack('H*')
+    second_crypt = ["c2265b23734e0dac"].pack('H*')
+    Net::NTLM::apply_des(Net::NTLM::LM_MAGIC, keys).should == [first_crypt, second_crypt]
   end
 
   it 'should generate an lm_hash' do
