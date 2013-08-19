@@ -27,7 +27,7 @@ module NTLM
          # Decode a UTF16 string to a ASCII string
          # @param [String] str The string to convert
       def self.decode_utf16le(str)
-        str.force_encoding('UTF-16')
+        str.force_encoding(Encoding::UTF_16LE)
         str.encode(Encoding::UTF_8, Encoding::UTF_16LE).force_encoding('UTF-8')
       end
 
