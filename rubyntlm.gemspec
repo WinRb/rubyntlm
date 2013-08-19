@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'lib', 'net', 'ntlm')
+require File.join(File.dirname(__FILE__), 'lib', 'net', 'ntlm', 'version')
 
 Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
@@ -21,4 +21,5 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "rake"
   s.add_development_dependency "rspec"
+  s.add_development_dependency "simplecov"
 end
