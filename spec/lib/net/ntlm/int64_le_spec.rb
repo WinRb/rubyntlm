@@ -4,9 +4,9 @@ describe Net::NTLM::Int64LE do
 
   int_values = {
       :default     => 5294967295,
-      :default_hex => "\xFF\xC9\x9A;\x01\x00\x00\x00",
+      :default_hex => [5294967295 & 0x00000000ffffffff, 5294967295 >> 32].pack("V2"),
       :alt         => 5294967294,
-      :alt_hex     => "\xFE\xC9\x9A;\x01\x00\x00\x00",
+      :alt_hex     => [5294967294 & 0x00000000ffffffff, 5294967294 >> 32].pack("V2"),
       :small       => "\x5C\x24\x10\x0f",
       :size        => 8,
       :bits        => 64
