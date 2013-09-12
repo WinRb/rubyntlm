@@ -6,6 +6,5 @@ rvm:
   - 2.0.0
   - rbx-19mode
   - rbx-18mode
-  - ruby-head
   - jruby-19mode
 
