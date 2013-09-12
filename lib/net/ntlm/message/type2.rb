@@ -51,7 +51,7 @@ module Net
         def response(arg, opt = {})
           usr = arg[:user]
           pwd = arg[:password]
-          domain = arg[:domain] ? arg[:domain] : ""
+          domain = arg[:domain] ? arg[:domain].upcase : ""
           if usr.nil? or pwd.nil?
             raise ArgumentError, "user and password have to be supplied"
           end
