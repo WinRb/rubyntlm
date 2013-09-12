@@ -10,9 +10,6 @@
 # -------------------------------------------------------------
 # Copyright (c) 2005,2006 yrock
 #
-# This program is free software.
-# You can distribute/modify this program under the terms of the
-# Ruby License.
 #
 # 2006-02-11 refactored by Minero Aoki
 # -------------------------------------------------------------
@@ -25,10 +22,6 @@
 # -------------------------------------------------------------
 # Copyright (c) 2003 Eric Glass
 #
-# Permission to use, copy, modify, and distribute this document
-# for any purpose and without any fee is hereby granted,
-# provided that the above copyright notice and this list of
-# conditions appear in all copies.
 # -------------------------------------------------------------
 #
 # The author also looked Mozilla-Firefox-1.0.7 source code,
