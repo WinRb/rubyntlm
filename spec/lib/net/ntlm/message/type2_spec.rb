@@ -79,4 +79,10 @@ describe Net::NTLM::Message::Type2 do
     t3.user.should == "v\0a\0g\0r\0a\0n\0t\0"
     t3.session_key.should == ''
   end
+
+  it 'should upcase domain when provided' do
+    t2 = Net::NTLM::Message.decode64(type2_packet)
+    t3 = t2.response({:user => 'vagrant', :password => 'vagrant', :domain => 'domain'}, {:ntlmv2 => true, :workstation => 'kobe.local'})
+    t3.domain.should == "D\0O\0M\0A\0I\0N\0"
+  end
 end
