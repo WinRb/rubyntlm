@@ -6,19 +6,26 @@ Ruby/NTLM provides message creator and parser for the NTLM authentication.
 
 __100% Ruby__
 
+How to install
+--------------
+
+```ruby
+require 'rubyntlm'
+```
+
 Simple Example
 --------------
 
 ### Creating NTLM Type 1 message
 
 ```ruby
-   t1 = NTLM::Message::Type1.new()
+   t1 = Net::NTLM::Message::Type1.new()
 ```
 
 ### Parsing NTLM Type 2 message from server
 
 ```ruby
-   t2 = NTLM::Message.parse(message_from_server)
+   t2 = Net::NTLM::Message.parse(message_from_server)
 ```
 
 ### Creating NTLM Type 3 message
