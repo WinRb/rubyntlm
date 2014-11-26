@@ -135,7 +135,7 @@ module Net
       # @option opt :unicode (false) Unicode encode the domain
       def ntlmv2_hash(user, password, target, opt={})
         ntlmhash = ntlm_hash(password, opt)
-        userdomain = (user + target).upcase
+        userdomain = user.upcase + target
         unless opt[:unicode]
           userdomain = EncodeUtil.encode_utf16le(userdomain)
         end
