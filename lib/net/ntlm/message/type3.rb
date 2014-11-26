@@ -39,7 +39,7 @@ module Net
 
             if arg[:session_key]
               t.enable(:session_key)
-              t.session_key = arg[session_key]
+              t.session_key = arg[:session_key]
             end
 
             if arg[:flag]
