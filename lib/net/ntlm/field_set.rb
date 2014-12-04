@@ -88,12 +88,12 @@ module Net
         @alist = self.class.prototypes.map{ |n, t, o| [n, t.new(o)] }
       end
 
-      def serialize
-        @alist.map{|n, f| f.serialize }.join
+      def parse(str, offset=0)
+        @alist.inject(offset){|cur, a| cur += a[1].parse(str, cur)}
       end
 
-      def parse(str, offset=0)
-        @alist.inject(offset){|cur, a|  cur += a[1].parse(str, cur)}
+      def serialize
+        @alist.map{|n, f| f.serialize }.join
       end
 
       def size
@@ -118,6 +118,10 @@ module Net
 
       def disable(name)
         self[name].active = false
+      end
+
+      def has_disabled_fields?
+        @alist.any? { |name, field| !field.active }
       end
     end
 
