@@ -44,11 +44,11 @@ module NTLM
         m.parse(str)
         case m.type
         when 1
-          t = Type1.parse(str)
+          t = Type1.new.parse(str)
         when 2
-          t = Type2.parse(str)
+          t = Type2.new.parse(str)
         when 3
-          t = Type3.parse(str)
+          t = Type3.new.parse(str)
         else
           raise ArgumentError, "unknown type: #{m.type}"
         end
@@ -58,6 +58,19 @@ module NTLM
       def decode64(str)
         parse(Base64.decode64(str))
       end
+    end
+
+    # @return [self]
+    def parse(str)
+      super
+
+      while has_disabled_fields? && serialize.size < str.size
+        # enable the next disabled field
+        self.class.names.find { |name| !self[name].active && enable(name) }
+        super
+      end
+
+      self
     end
 
     def has_flag?(flag)

@@ -11,7 +11,7 @@ describe Net::NTLM::Message::Type2 do
       { :name => :flag, :class => Net::NTLM::Int32LE, :value =>  Net::NTLM::DEFAULT_FLAGS[:TYPE2], :active => true },
       { :name => :target_name, :class => Net::NTLM::SecurityBuffer, :value => '', :active => true },
       { :name => :target_info, :class => Net::NTLM::SecurityBuffer, :value =>  '', :active => false },
-      { :name => :padding, :class => Net::NTLM::String, :value => '', :active => false },
+      { :name => :os_version, :class => Net::NTLM::String, :value => '', :active => false },
   ]
   flags = [
       :UNICODE
@@ -28,9 +28,7 @@ describe Net::NTLM::Message::Type2 do
     t2.challenge.should == 14872292244261496103
     t2.context.should == 0
     t2.flag.should == 42631685
-    if "".respond_to?(:force_encoding)
-      t2.padding.should == ("\x06\x01\xB1\x1D\0\0\0\x0F".force_encoding('ASCII-8BIT'))
-    end
+    t2.os_version.should == ['0601b11d0000000f'].pack('H*')
     t2.sign.should == "NTLMSSP\0"
 
     t2_target_info = Net::NTLM::EncodeUtil.decode_utf16le(t2.target_info)
@@ -51,14 +49,14 @@ describe Net::NTLM::Message::Type2 do
     t2.challenge = source.challenge
     t2.context = source.context
     t2.flag = source.flag
-    t2.padding = source.padding
+    t2.os_version = source.os_version
     t2.sign = source.sign
     t2.target_info = source.target_info
     t2.target_name = source.target_name
     t2.type = source.type
     t2.enable(:context)
     t2.enable(:target_info)
-    t2.enable(:padding)
+    t2.enable(:os_version)
 
     t2.encode64.should == type2_packet
   end

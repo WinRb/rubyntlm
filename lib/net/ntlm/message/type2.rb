@@ -12,32 +12,7 @@ module Net
         int64LE         :challenge,   { :value => 0}
         int64LE         :context,     { :value => 0, :active => false }
         security_buffer :target_info, { :value => "", :active => false }
-        string          :padding,     { :size => 0, :value => "", :active => false }
-
-        class << Type2
-          # Parse a Type 2 packet
-          # @param [String] str A string containing Type 2 data
-          # @return [Type2]
-          def parse(str)
-            t = new
-            t.parse(str)
-            t
-          end
-        end
-
-        # @!visibility private
-        def parse(str)
-          super(str)
-          if has_flag?(:TARGET_INFO)
-            enable(:context)
-            enable(:target_info)
-            super(str)
-          end
-          if ( (len = data_edge - head_size) > 0)
-            self.padding = "\0" * len
-            super(str)
-          end
-        end
+        string          :os_version,  { :size => 8, :value => "", :active => false }
 
         # Generates a Type 3 response based on the Type 2 Information
         # @return [Type3]

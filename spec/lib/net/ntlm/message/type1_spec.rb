@@ -7,7 +7,7 @@ describe Net::NTLM::Message::Type1 do
       { :name => :flag, :class => Net::NTLM::Int32LE, :value =>  Net::NTLM::DEFAULT_FLAGS[:TYPE1], :active => true },
       { :name => :domain, :class => Net::NTLM::SecurityBuffer, :value => '', :active => true },
       { :name => :workstation, :class => Net::NTLM::SecurityBuffer, :value =>  Socket.gethostname, :active => true },
-      { :name => :padding, :class => Net::NTLM::String, :value => '', :active => false },
+      { :name => :os_version, :class => Net::NTLM::String, :value => '', :active => false },
   ]
   flags = [
       :UNICODE,
@@ -27,7 +27,7 @@ describe Net::NTLM::Message::Type1 do
     t1.class.should == Net::NTLM::Message::Type1
     t1.domain.should == ''
     t1.flag.should == 557575
-    t1.padding.should == ''
+    t1.os_version.should == ''
     t1.sign.should  == "NTLMSSP\0"
     t1.type.should == 1
     t1.workstation.should == ''
@@ -103,6 +103,28 @@ describe Net::NTLM::Message::Type1 do
       it 'should have empty domain' do
         message.domain.should be_empty
       end
+    end
+
+    context 'NTLMv2 with OS version' do
+      let(:data) { ['4e544c4d5353500001000000978208e2000000000000000000000000000000000602f0230000000f'].pack('H*') }
+
+      it 'should set the magic' do
+        message.sign.should eql(Net::NTLM::SSP_SIGN)
+      end
+      it 'should set the type' do
+        message.type.should == 1
+      end
+      it 'should have empty workstation' do
+        message.workstation.should be_empty
+      end
+      it 'should have empty domain' do
+        message.domain.should be_empty
+      end
+
+      it 'should set OS version info' do
+        message.os_version.should == ['0602f0230000000f'].pack('H*')
+      end
+
     end
 
   end
