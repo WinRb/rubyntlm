@@ -85,4 +85,49 @@ describe Net::NTLM::Message::Type2 do
     t3 = t2.response({:user => 'vagrant', :password => 'vagrant', :domain => 'domain'}, {:ntlmv2 => true, :workstation => 'kobe.local'})
     t3.domain.should == "D\0O\0M\0A\0I\0N\0"
   end
+
+  describe '.parse' do
+    subject(:message) { described_class.parse(data) }
+    # http://davenport.sourceforge.net/ntlm.html#appendixC7
+    context 'NTLM2 Session Response Authentication; NTLM2 Signing and Sealing Using the 128-bit NTLM2 Session Response User Session Key With Key Exchange Negotiated' do
+      let(:data) do
+        [
+          '4e544c4d53535000020000000c000c0030000000358289e0677f1c557a5ee96c' \
+          '0000000000000000460046003c00000054004500530054004e00540002000c00' \
+          '54004500530054004e00540001000c004d0045004d0042004500520003001e00' \
+          '6d0065006d006200650072002e0074006500730074002e0063006f006d000000' \
+          '0000'
+        ].pack('H*')
+      end
+
+      it 'should set the magic' do
+        message.sign.should eql(Net::NTLM::SSP_SIGN)
+      end
+      it 'should set the type' do
+        message.type.should == 2
+      end
+      it 'should set the target name' do
+        # TESTNT
+        message.target_name.should == ["54004500530054004e005400"].pack('H*')
+      end
+      it 'should set the flags' do
+        message.flag.should == 0xe0898235
+      end
+      it 'should set the challenge' do
+        message.challenge.should == 0x6ce95e7a551c7f67
+      end
+      it 'should set an empty context' do
+        message.context.should be_zero
+      end
+      it 'should set target info' do
+        ti = [
+          '02000c0054004500530054004e00540001000c004d0045004d00420045005200' \
+          '03001e006d0065006d006200650072002e0074006500730074002e0063006f00' \
+          '6d0000000000'
+        ].pack('H*')
+        message.target_info.should == ti
+      end
+
+    end
+  end
 end

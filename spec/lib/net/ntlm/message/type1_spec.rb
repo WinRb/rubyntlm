@@ -39,4 +39,43 @@ describe Net::NTLM::Message::Type1 do
     t1.encode64.should == type1_packet
   end
 
+
+  describe '.parse' do
+    subject(:message) { described_class.parse(data) }
+    # http://davenport.sourceforge.net/ntlm.html#appendixC7
+    context 'NTLM2 Session Response Authentication; NTLM2 Signing and Sealing Using the 128-bit NTLM2 Session Response User Session Key With Key Exchange Negotiated' do
+      let(:data) do
+        ['4e544c4d5353500001000000b78208e000000000000000000000000000000000'].pack('H*')
+      end
+
+      it 'should set the magic' do
+        message.sign.should eql(Net::NTLM::SSP_SIGN)
+      end
+      it 'should set the type' do
+        message.type.should == 1
+      end
+      it 'should set the flags' do
+        message.flag.should == 0xe00882b7
+        message.should have_flag(:UNICODE)
+        message.should have_flag(:OEM)
+        message.should have_flag(:REQUEST_TARGET)
+        message.should have_flag(:SIGN)
+        message.should have_flag(:SEAL)
+        message.should have_flag(:NTLM)
+        message.should have_flag(:ALWAYS_SIGN)
+        message.should have_flag(:NTLM2_KEY)
+        message.should have_flag(:KEY128)
+        message.should have_flag(:KEY_EXCHANGE)
+        message.should have_flag(:KEY56)
+      end
+      it 'should have empty workstation' do
+        message.workstation.should be_empty
+      end
+      it 'should have empty domain' do
+        message.domain.should be_empty
+      end
+    end
+
+  end
+
 end

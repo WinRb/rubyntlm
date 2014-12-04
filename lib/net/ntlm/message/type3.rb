@@ -13,15 +13,23 @@ module Net
         security_buffer :user,          {:value => ""}
         security_buffer :workstation,   {:value => ""}
         security_buffer :session_key,   {:value => "", :active => false }
-        int64LE         :flag,          {:value => 0, :active => false }
+        int32LE         :flag,          {:value => 0, :active => false }
+        string          :os_version,    {:size => 8, :active => false }
 
         class << Type3
+
           # Parse a Type 3 packet
+          #
           # @param [String] str A string containing Type 3 data
-          # @return [Type2]
+          # @return [Type3]
           def parse(str)
             t = new
             t.parse(str)
+            while t.serialize.size < str.size && t.has_disabled_fields?
+              # enable the next disabled field
+              names.find { |name| !t[name].active && t.enable(name) }
+              t.parse(str)
+            end
             t
           end
 
