@@ -74,6 +74,35 @@ describe Net::NTLM::Message::Type1 do
       it 'should have empty domain' do
         message.domain.should be_empty
       end
+
+    end
+
+    # http://davenport.sourceforge.net/ntlm.html#appendixC9
+    context 'NTLMv2 Authentication; NTLM1 Signing and Sealing Using the 40-bit NTLMv2 User Session Key' do
+      let(:data) { ['4e544c4d53535000010000003782000000000000000000000000000000000000'].pack('H*') }
+
+      it 'should set the magic' do
+        message.sign.should eql(Net::NTLM::SSP_SIGN)
+      end
+      it 'should set the type' do
+        message.type.should == 1
+      end
+      it 'should set the flags' do
+        message.flag.should == 0x00008237
+        message.should have_flag(:UNICODE)
+        message.should have_flag(:OEM)
+        message.should have_flag(:REQUEST_TARGET)
+        message.should have_flag(:SIGN)
+        message.should have_flag(:SEAL)
+        message.should have_flag(:NTLM)
+        message.should have_flag(:ALWAYS_SIGN)
+      end
+      it 'should have empty workstation' do
+        message.workstation.should be_empty
+      end
+      it 'should have empty domain' do
+        message.domain.should be_empty
+      end
     end
 
   end
