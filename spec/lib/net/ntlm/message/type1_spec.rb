@@ -24,19 +24,19 @@ describe Net::NTLM::Message::Type1 do
 
   it 'should deserialize' do
     t1 =  Net::NTLM::Message.decode64(type1_packet)
-    t1.class.should == Net::NTLM::Message::Type1
-    t1.domain.should == ''
-    t1.flag.should == 557575
-    t1.padding.should == ''
-    t1.sign.should  == "NTLMSSP\0"
-    t1.type.should == 1
-    t1.workstation.should == ''
+    expect(t1.class).to eq(Net::NTLM::Message::Type1)
+    expect(t1.domain).to eq('')
+    expect(t1.flag).to eq(557575)
+    expect(t1.padding).to eq('')
+    expect(t1.sign).to eq("NTLMSSP\0")
+    expect(t1.type).to eq(1)
+    expect(t1.workstation).to eq('')
   end
 
   it 'should serialize' do
     t1 = Net::NTLM::Message::Type1.new
     t1.workstation = ''
-    t1.encode64.should == type1_packet
+    expect(t1.encode64).to eq(type1_packet)
   end
 
 end

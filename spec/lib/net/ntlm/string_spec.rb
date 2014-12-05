@@ -22,51 +22,51 @@ describe Net::NTLM::String do
 
   context '#serialize' do
     it 'should return the value when active' do
-      active.serialize.should == 'Test'
+      expect(active.serialize).to eq('Test')
     end
 
     it 'should return an empty string when inactive' do
-      inactive.serialize.should == ''
+      expect(inactive.serialize).to eq('')
     end
 
     it 'should coerce non-string values into strings' do
       active.value = 15
-      active.serialize.should == '15'
+      expect(active.serialize).to eq('15')
     end
 
     it 'should return empty string on a nil' do
       active.value = nil
-      active.serialize.should == ''
+      expect(active.serialize).to eq('')
     end
   end
 
   context '#value=' do
     it 'should set active to false if it empty' do
       active.value = ''
-      active.active.should == false
+      expect(active.active).to eq(false)
     end
 
     it 'should adjust the size based on the value set' do
-      active.size.should == 4
+      expect(active.size).to eq(4)
       active.value = 'Foobar'
-      active.size.should == 6
+      expect(active.size).to eq(6)
     end
   end
 
   context '#parse' do
     it 'should read in a string of the proper size' do
-      active.parse('tseT').should == 4
-      active.value.should == 'tseT'
+      expect(active.parse('tseT')).to eq(4)
+      expect(active.value).to eq('tseT')
     end
 
     it 'should not read in a string that is too small' do
-      active.parse('B').should == 0
-      active.value.should == 'Test'
+      expect(active.parse('B')).to eq(0)
+      expect(active.value).to eq('Test')
     end
 
     it 'should be able to read from an offset and only for the given size' do
-      active.parse('FooBarBaz',3).should == 4
-      active.value.should == 'BarB'
+      expect(active.parse('FooBarBaz',3)).to eq(4)
+      expect(active.value).to eq('BarB')
     end
   end
 end

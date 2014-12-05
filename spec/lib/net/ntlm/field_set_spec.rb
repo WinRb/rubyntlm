@@ -18,16 +18,16 @@ describe Net::NTLM::FieldSet do
     end
 
     it 'should serialize all the fields' do
-      fieldset_object.serialize.should == 'TestFoo'
+      expect(fieldset_object.serialize).to eq('TestFoo')
     end
 
     it 'should parse a string across the fields' do
       fieldset_object.parse('FooBarBaz')
-      fieldset_object.serialize.should == 'FooBarB'
+      expect(fieldset_object.serialize).to eq('FooBarB')
     end
 
     it 'should return an aggregate size of all the fields' do
-      fieldset_object.size.should == 7
+      expect(fieldset_object.size).to eq(7)
     end
   end
 end

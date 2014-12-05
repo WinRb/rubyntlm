@@ -22,68 +22,68 @@ describe Net::NTLM do
   let(:keys) { Net::NTLM.gen_keys(padded_pwd)}
 
   it 'should convert a value to 64-bit LE Integer' do
-    Net::NTLM.pack_int64le(42).should == "\x2A\x00\x00\x00\x00\x00\x00\x00"
+    expect(Net::NTLM.pack_int64le(42)).to eq("\x2A\x00\x00\x00\x00\x00\x00\x00")
   end
 
   it 'should split a string into an array of slices, 7 chars or less' do
-    Net::NTLM.split7("HelloWorld!").should == [ 'HelloWo', 'rld!']
+    expect(Net::NTLM.split7("HelloWorld!")).to eq([ 'HelloWo', 'rld!'])
   end
 
   it 'should generate DES keys from the supplied string' do
     first_key = ["52a2516b252a5161"].pack('H*')
     second_key = ["3180010101010101"].pack('H*')
-    Net::NTLM.gen_keys(padded_pwd).should == [first_key, second_key]
+    expect(Net::NTLM.gen_keys(padded_pwd)).to eq([first_key, second_key])
   end
 
   it 'should encrypt the string with DES for each key supplied' do
     first_crypt = ["ff3750bcc2b22412"].pack('H*')
     second_crypt = ["c2265b23734e0dac"].pack('H*')
-    Net::NTLM::apply_des(Net::NTLM::LM_MAGIC, keys).should == [first_crypt, second_crypt]
+    expect(Net::NTLM::apply_des(Net::NTLM::LM_MAGIC, keys)).to eq([first_crypt, second_crypt])
   end
 
   it 'should generate an lm_hash' do
-    Net::NTLM::lm_hash(passwd).should == ["ff3750bcc2b22412c2265b23734e0dac"].pack("H*")
+    expect(Net::NTLM::lm_hash(passwd)).to eq(["ff3750bcc2b22412c2265b23734e0dac"].pack("H*"))
   end
 
   it 'should generate an ntlm_hash' do
-    Net::NTLM::ntlm_hash(passwd).should == ["cd06ca7c7e10c99b1d33b7485a2ed808"].pack("H*")
+    expect(Net::NTLM::ntlm_hash(passwd)).to eq(["cd06ca7c7e10c99b1d33b7485a2ed808"].pack("H*"))
   end
 
   it 'should generate an ntlmv2_hash' do
-    Net::NTLM::ntlmv2_hash(user, passwd, domain).should == ["04b8e0ba74289cc540826bab1dee63ae"].pack("H*")
+    expect(Net::NTLM::ntlmv2_hash(user, passwd, domain)).to eq(["04b8e0ba74289cc540826bab1dee63ae"].pack("H*"))
   end
 
   it 'should generate an lm_response' do
-    Net::NTLM::lm_response(
+    expect(Net::NTLM::lm_response(
         {
             :lm_hash => Net::NTLM::lm_hash(passwd),
             :challenge => challenge
         }
-    ).should == ["c337cd5cbd44fc9782a667af6d427c6de67c20c2d3e77c56"].pack("H*")
+    )).to eq(["c337cd5cbd44fc9782a667af6d427c6de67c20c2d3e77c56"].pack("H*"))
   end
 
   it 'should generate an ntlm_response' do
     ntlm_hash = Net::NTLM::ntlm_hash(passwd)
-    Net::NTLM::ntlm_response(
+    expect(Net::NTLM::ntlm_response(
         {
             :ntlm_hash => ntlm_hash,
             :challenge => challenge
         }
-    ).should == ["25a98c1c31e81847466b29b2df4680f39958fb8c213a9cc6"].pack("H*")
+    )).to eq(["25a98c1c31e81847466b29b2df4680f39958fb8c213a9cc6"].pack("H*"))
   end
 
   it 'should generate a lvm2_response' do
-    Net::NTLM::lmv2_response(
+    expect(Net::NTLM::lmv2_response(
         {
             :ntlmv2_hash => Net::NTLM::ntlmv2_hash(user, passwd, domain),
             :challenge => challenge
         },
         { :client_challenge => client_ch }
-    ).should == ["d6e6152ea25d03b7c6ba6629c2d6aaf0ffffff0011223344"].pack("H*")
+    )).to eq(["d6e6152ea25d03b7c6ba6629c2d6aaf0ffffff0011223344"].pack("H*"))
   end
 
   it 'should generate a ntlmv2_response' do
-    Net::NTLM::ntlmv2_response(
+    expect(Net::NTLM::ntlmv2_response(
         {
             :ntlmv2_hash => Net::NTLM::ntlmv2_hash(user, passwd, domain),
             :challenge => challenge,
@@ -93,7 +93,7 @@ describe Net::NTLM do
             :timestamp => timestamp,
             :client_challenge => client_ch
         }
-    ).should == [
+    )).to eq([
         "cbabbca713eb795d04c97abc01ee4983" +
         "01010000000000000090d336b734c301" +
         "ffffff00112233440000000002000c00" +
@@ -104,7 +104,7 @@ describe Net::NTLM do
         "650072002e0064006f006d0061006900" +
         "6e002e0063006f006d00000000000000" +
         "0000"
-    ].pack("H*")
+    ].pack("H*"))
   end
 
   it 'should generate a ntlm2_session' do
@@ -115,7 +115,7 @@ describe Net::NTLM do
         },
         { :client_challenge => client_ch }
     )
-    session[0].should == ["ffffff001122334400000000000000000000000000000000"].pack("H*")
-    session[1].should == ["10d550832d12b2ccb79d5ad1f4eed3df82aca4c3681dd455"].pack("H*")
+    expect(session[0]).to eq(["ffffff001122334400000000000000000000000000000000"].pack("H*"))
+    expect(session[1]).to eq(["10d550832d12b2ccb79d5ad1f4eed3df82aca4c3681dd455"].pack("H*"))
   end
 end
