@@ -41,6 +41,8 @@ describe Net::NTLM::Message::Type3 do
         ].pack('H*')
       end
 
+      let(:server_challenge) { ['f588469dc96fe809'].pack('H*') }
+
       it 'should set the magic' do
         message.sign.should eql(Net::NTLM::SSP_SIGN)
       end
@@ -89,6 +91,12 @@ describe Net::NTLM::Message::Type3 do
 
       it 'should NOT set the OS version structure' do
         message.os_version.should be_nil
+      end
+
+      describe '#blank_password?' do
+        it 'should be true' do
+          message.blank_password?(server_challenge).should be_true
+        end
       end
 
     end
