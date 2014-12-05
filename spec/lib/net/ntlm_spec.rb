@@ -1,11 +1,9 @@
-
-require 'rspec'
-require 'net/ntlm'
+require "spec_helper"
 
 describe Net::NTLM do
   let(:passwd) {"SecREt01"}
   let(:user) {"user"}
-  let(:domain) {"domain"}
+  let(:domain) {"DOMAIN"}
   let(:challenge) {["0123456789abcdef"].pack("H*")}
   let(:client_ch) {["ffffff0011223344"].pack("H*")}
   let(:timestamp) {1055844000}
