@@ -90,9 +90,8 @@ module Net
                            :flag => self.flag
                        })
         end
+
       end
-
-
 
     end
   end

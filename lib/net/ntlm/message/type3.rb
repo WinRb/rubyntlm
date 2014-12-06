@@ -50,9 +50,51 @@ module Net
             t
           end
         end
+
+        def blank_password?(server_challenge)
+          password?('', server_challenge)
+        end
+
+        def password?(password, server_challenge)
+          if ntlm_response.size == 24
+            # NTLMv1 or NTLM2 Session
+            # TODO NTLMv1
+            hash = ntlm_response
+            _lm, empty_hash = NTLM.ntlm2_session(
+              {
+                :ntlm_hash => NTLM.ntlm_hash(password),
+                :challenge => server_challenge,
+              },
+              {
+                :client_challenge => lm_response[0,8]
+              }
+            )
+          else
+            # NTLMv2
+
+            hash = ntlm_response[0,16]
+
+            blob = Blob.new
+            blob.parse(ntlm_response[16..-1])
+
+            empty_hash = NTLM.ntlmv2_response(
+              {
+                :ntlmv2_hash => NTLM.ntlmv2_hash(user, '', domain, :unicode => true),
+                :challenge => server_challenge,
+                :target_info => blob.target_info
+              },
+              {
+                :client_challenge => blob.challenge,
+                # The blob's timestamp is already in milliseconds since 1601,
+                # so convert it back to epoch time first
+                :timestamp => (blob.timestamp / 10_000_000) - NTLM::TIME_OFFSET,
+              }
+            )[0,16]
+          end
+
+          hash == empty_hash
+        end
       end
-
-
     end
   end
 end

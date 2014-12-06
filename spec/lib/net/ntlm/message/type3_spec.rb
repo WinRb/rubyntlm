@@ -95,7 +95,7 @@ describe Net::NTLM::Message::Type3 do
 
       describe '#blank_password?' do
         it 'should be true' do
-          message.blank_password?(server_challenge).should be_true
+          message.blank_password?(server_challenge).should be true
         end
       end
 
@@ -113,6 +113,7 @@ describe Net::NTLM::Message::Type3 do
           '13436637f77693d8b992d619e584c7ee727a5240822ec7af4e9100c43e6fee7f'
         ].pack('H*')
       end
+
       it 'should set the LM response' do
         lm_response = ['404d1b6f6915258000000000000000000000000000000000'].pack('H*')
         message.lm_response.should == lm_response
@@ -139,6 +140,18 @@ describe Net::NTLM::Message::Type3 do
       it 'should set the session key' do
         session_key = ['727a5240822ec7af4e9100c43e6fee7f'].pack('H*')
         message.session_key.should == session_key
+      end
+
+      let(:server_challenge) { ['677f1c557a5ee96c'].pack('H*') }
+      describe '#password?' do
+        it 'should be true for "test1234"' do
+          message.password?('test1234', server_challenge).should be true
+        end
+      end
+      describe '#blank_password?' do
+        it 'should be false' do
+          message.blank_password?(server_challenge).should be false
+        end
       end
 
     end

@@ -184,7 +184,7 @@ module Net
           ts = Time.now.to_i
         end
         # epoch -> milsec from Jan 1, 1601
-        ts = 10000000 * (ts + TIME_OFFSET)
+        ts = 10_000_000 * (ts + TIME_OFFSET)
 
         blob = Blob.new
         blob.timestamp = ts
@@ -192,6 +192,7 @@ module Net
         blob.target_info = ti
 
         bb = blob.serialize
+
         OpenSSL::HMAC.digest(OpenSSL::Digest::MD5.new, key, chal + bb) + bb
       end
 
@@ -218,15 +219,16 @@ module Net
         rescue
           raise ArgumentError
         end
+        chal = NTLM::pack_int64le(chal) if chal.is_a?(Integer)
 
         if opt[:client_challenge]
-          cc  = opt[:client_challenge]
+          cc = opt[:client_challenge]
         else
           cc = rand(MAX64)
         end
         cc = NTLM::pack_int64le(cc) if cc.is_a?(Integer)
 
-        keys = gen_keys passwd_hash.ljust(21, "\0")
+        keys = gen_keys(passwd_hash.ljust(21, "\0"))
         session_hash = OpenSSL::Digest::MD5.digest(chal + cc).slice(0, 8)
         response = apply_des(session_hash, keys).join
         [cc.ljust(24, "\0"), response]

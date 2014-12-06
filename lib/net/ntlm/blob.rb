@@ -10,7 +10,15 @@ module Net
       string     :challenge,      {:value => "", :size => 8}
       int32LE    :unknown1,       {:value => 0}
       string     :target_info,    {:value => "", :size => 0}
-      int32LE    :unknown2,       {:value => 0}
+
+      def parse(str, offset=0)
+        if str.size > 28
+          enable(:target_info)
+          self[:target_info].value = str[28..-1]
+
+        end
+        super
+      end
     end
 
   end
