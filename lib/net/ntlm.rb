@@ -57,11 +57,9 @@ require 'net/ntlm/message/type1'
 require 'net/ntlm/message/type2'
 require 'net/ntlm/message/type3'
 
-
 require 'net/ntlm/encode_util'
 
-
-
+require 'net/ntlm/client'
 
 module Net
   module NTLM
