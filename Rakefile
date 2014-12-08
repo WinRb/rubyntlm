@@ -12,3 +12,11 @@ task :coverage do
   Rake::Task["spec"].execute
 end
 
+desc "Open a Pry console for this library"
+task :console do
+  require 'pry'
+  require 'net/ntlm'
+  ARGV.clear
+  Pry.start
+end
+
