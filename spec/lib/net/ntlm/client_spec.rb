@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe Net::NTLM::Client do
   let(:inst) { Net::NTLM::Client.new("test", "test01", workstation: "testhost") }
+  let(:user_session_key) {["3c4918ff0b33e2603e5d7ceaf34bb7d5"].pack("H*")}
 
   describe "#init_context" do
 
@@ -55,12 +56,29 @@ describe Net::NTLM::Client do
     let(:client_to_server_sign_key) {["3c4918ff0b33e2603e5d7ceaf34bb7d5"].pack("H*")}
     let(:client_to_server_seal_key) {["51eb7030ed5875e5c33e4501d27edbac"].pack("H*")}
 
-    it "signs a message and when NTLM sealing is active" do
+    it "signs a message and when NEG_KEY_EXCH is true" do
       expect(inst).to receive(:client_to_server_sign_key).and_return(client_to_server_sign_key)
       expect(inst).to receive(:client_to_server_seal_key).and_return(client_to_server_seal_key)
+      expect(inst).to receive(:negotiate_key_exchange?).and_return(true)
       sm = inst.sign_message("Test Message")
       str = "\x01\x00\x00\x00\xC2\xE6\t\xFB\x05q\xC1\xC7\x00\x00\x00\x00".force_encoding(Encoding::ASCII_8BIT)
       expect(sm).to eq(str)
     end
+
   end
+
+  describe "#master_key" do
+    it "returns a random 16-byte key when negotiate_key_exchange? is true" do
+      expect(inst).to receive(:negotiate_key_exchange?).and_return(true)
+      expect(inst).not_to receive(:user_session_key)
+      inst.master_key
+    end
+
+    it "returns the user_session_key when negotiate_key_exchange? is false" do
+      expect(inst).to receive(:negotiate_key_exchange?).and_return(false)
+      expect(inst).to receive(:user_session_key).and_return(user_session_key)
+      inst.master_key
+    end
+  end
+
 end

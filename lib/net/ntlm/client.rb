@@ -33,10 +33,12 @@ module Net
 
       def sign_message(message)
         seq = self.sequence
-        presig = OpenSSL::HMAC.digest(OpenSSL::Digest::MD5.new, client_to_server_sign_key, "#{seq}#{message}")
-        enc = client_cipher.update presig[0..7]
-        enc << client_cipher.final
-        "#{VERSION_MAGIC}#{enc}#{seq}"
+        sig = OpenSSL::HMAC.digest(OpenSSL::Digest::MD5.new, client_to_server_sign_key, "#{seq}#{message}")[0..7]
+        if negotiate_key_exchange?
+          sig = client_cipher.update sig
+          sig << client_cipher.final
+        end
+        "#{VERSION_MAGIC}#{sig}#{seq}"
       end
 
       def seal_message(message)
@@ -62,7 +64,13 @@ module Net
       end
 
       def master_key
-        @master_key ||= OpenSSL::Cipher.new("rc4").random_key
+        @master_key ||= begin
+          if negotiate_key_exchange?
+            OpenSSL::Cipher.new("rc4").random_key
+          else
+            user_session_key
+          end
+        end
       end
 
       def sequence
@@ -101,13 +109,15 @@ module Net
           flag:           (type2_message.flag & flags)
         }
         t3 = Message::Type3.create type3_opts
-        t3.enable(:session_key)
-        rc4 = OpenSSL::Cipher::Cipher.new("rc4")
-        rc4.encrypt
-        rc4.key = user_session_key
-        sk = rc4.update master_key
-        sk << rc4.final
-        t3.session_key = sk
+        if negotiate_key_exchange?
+          t3.enable(:session_key)
+          rc4 = OpenSSL::Cipher::Cipher.new("rc4")
+          rc4.encrypt
+          rc4.key = user_session_key
+          sk = rc4.update master_key
+          sk << rc4.final
+          t3.session_key = sk
+        end
         t3
       end
 
@@ -161,10 +171,6 @@ module Net
         end
       end
 
-      def signing_key
-        session_key
-      end
-
       def client_challenge
         @client_challenge ||= Net::NTLM.pack_int64le rand(Net::NTLM::MAX64)
       end
@@ -180,6 +186,10 @@ module Net
 
       def use_oem_strings?
         type2_message.has_flag? :OEM
+      end
+
+      def negotiate_key_exchange?
+        type2_message.has_flag? :NEG_KEY_EXCH
       end
 
       def username
