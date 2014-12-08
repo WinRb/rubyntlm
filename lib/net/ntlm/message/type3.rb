@@ -72,7 +72,7 @@ module Net
           else
             # NTLMv2
 
-            hash = ntlm_response[0,16]
+            hash = ntlm_response
 
             blob = Blob.new
             blob.parse(ntlm_response[16..-1])
@@ -91,7 +91,7 @@ module Net
                 # so convert it back to epoch time first
                 :timestamp => (blob.timestamp / 10_000_000) - NTLM::TIME_OFFSET,
               }
-            )[0,16]
+            )
           end
 
           hash == empty_hash
