@@ -85,6 +85,7 @@ module Net
         end
 
         private
+
         def ntlm2_session_password?(password, server_challenge)
           hash = ntlm_response
           _lm, empty_hash = NTLM.ntlm2_session(
@@ -101,6 +102,8 @@ module Net
 
         def ntlmv2_password?(password, server_challenge)
 
+          # The first 16 bytes of the ntlm_response are the HMAC of the blob
+          # that follows it.
           blob = Blob.new
           blob.parse(ntlm_response[16..-1])
 
