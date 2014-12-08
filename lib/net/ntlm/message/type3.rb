@@ -79,6 +79,8 @@ module Net
 
             empty_hash = NTLM.ntlmv2_response(
               {
+                # user and domain came from the serialized data here, so
+                # they're already unicode
                 :ntlmv2_hash => NTLM.ntlmv2_hash(user, '', domain, :unicode => true),
                 :challenge => server_challenge,
                 :target_info => blob.target_info
