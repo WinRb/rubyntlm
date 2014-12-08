@@ -99,6 +99,13 @@ describe Net::NTLM::Message::Type3 do
         end
       end
 
+      describe '#ntlm_version' do
+        let(:ver) { message.ntlm_version }
+        it 'should be :ntlmv2' do
+          ver.should == :ntlmv2
+        end
+      end
+
     end
 
     # http://davenport.sourceforge.net/ntlm.html#appendixC7
@@ -154,6 +161,13 @@ describe Net::NTLM::Message::Type3 do
         end
       end
 
+      describe '#ntlm_version' do
+        let(:ver) { message.ntlm_version }
+        it 'should be :ntlm2_session' do
+          ver.should == :ntlm2_session
+        end
+      end
+
     end
 
     # http://davenport.sourceforge.net/ntlm.html#appendixC9
@@ -195,6 +209,13 @@ describe Net::NTLM::Message::Type3 do
         # MEMBER
         workstation = ['4d0045004d00420045005200'].pack('H*')
         message.workstation.should == workstation
+      end
+
+      describe '#ntlm_version' do
+        let(:ver) { message.ntlm_version }
+        it 'should be :ntlmv2' do
+          ver.should == :ntlmv2
+        end
       end
 
     end
