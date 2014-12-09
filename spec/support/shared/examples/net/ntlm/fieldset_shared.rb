@@ -21,19 +21,19 @@ shared_examples_for 'a fieldset' do |fields|
       end
 
       it 'should set the prototypes correctly' do
-        fieldset_class.prototypes.should include([:test_string, Net::NTLM::String, {:value=>"Test"}])
+        expect(fieldset_class.prototypes).to include([:test_string, Net::NTLM::String, {:value=>"Test"}])
       end
 
       it 'should set the names correctly' do
-        fieldset_class.names.should include(:test_string)
+        expect(fieldset_class.names).to include(:test_string)
       end
 
       it 'should set the types correctly' do
-        fieldset_class.types.should include(Net::NTLM::String)
+        expect(fieldset_class.types).to include(Net::NTLM::String)
       end
 
       it 'should set the opts correctly' do
-        fieldset_class.opts.should include({:value => 'Test'})
+        expect(fieldset_class.opts).to include({:value => 'Test'})
       end
 
       context 'when creating an instance' do
@@ -42,11 +42,11 @@ shared_examples_for 'a fieldset' do |fields|
         end
 
         it 'should have the new accessor' do
-          fieldset_object.should respond_to :test_string
+          expect(fieldset_object).to respond_to(:test_string)
         end
 
         it 'should have the correct default value' do
-          fieldset_object.test_string.should == 'Test'
+          expect(fieldset_object.test_string).to eq('Test')
         end
       end
     end
@@ -57,19 +57,19 @@ shared_examples_for 'a fieldset' do |fields|
       end
 
       it 'should set the prototypes correctly' do
-        fieldset_class.prototypes.should include([:test_int, Net::NTLM::Int16LE, {:value=>15}])
+        expect(fieldset_class.prototypes).to include([:test_int, Net::NTLM::Int16LE, {:value=>15}])
       end
 
       it 'should set the names correctly' do
-        fieldset_class.names.should include(:test_int)
+        expect(fieldset_class.names).to include(:test_int)
       end
 
       it 'should set the types correctly' do
-        fieldset_class.types.should include(Net::NTLM::Int16LE)
+        expect(fieldset_class.types).to include(Net::NTLM::Int16LE)
       end
 
       it 'should set the opts correctly' do
-        fieldset_class.opts.should include({:value => 15})
+        expect(fieldset_class.opts).to include({:value => 15})
       end
 
       context 'when creating an instance' do
@@ -78,11 +78,11 @@ shared_examples_for 'a fieldset' do |fields|
         end
 
         it 'should have the new accessor' do
-          fieldset_object.should respond_to :test_int
+          expect(fieldset_object).to respond_to(:test_int)
         end
 
         it 'should have the correct default value' do
-          fieldset_object.test_int.should == 15
+          expect(fieldset_object.test_int).to eq(15)
         end
       end
     end
@@ -93,19 +93,19 @@ shared_examples_for 'a fieldset' do |fields|
       end
 
       it 'should set the prototypes correctly' do
-        fieldset_class.prototypes.should include([:test_int, Net::NTLM::Int32LE, {:value=>15}])
+        expect(fieldset_class.prototypes).to include([:test_int, Net::NTLM::Int32LE, {:value=>15}])
       end
 
       it 'should set the names correctly' do
-        fieldset_class.names.should include(:test_int)
+        expect(fieldset_class.names).to include(:test_int)
       end
 
       it 'should set the types correctly' do
-        fieldset_class.types.should include(Net::NTLM::Int32LE)
+        expect(fieldset_class.types).to include(Net::NTLM::Int32LE)
       end
 
       it 'should set the opts correctly' do
-        fieldset_class.opts.should include({:value => 15})
+        expect(fieldset_class.opts).to include({:value => 15})
       end
 
       context 'when creating an instance' do
@@ -114,11 +114,11 @@ shared_examples_for 'a fieldset' do |fields|
         end
 
         it 'should have the new accessor' do
-          fieldset_object.should respond_to :test_int
+          expect(fieldset_object).to respond_to(:test_int)
         end
 
         it 'should have the correct default value' do
-          fieldset_object.test_int.should == 15
+          expect(fieldset_object.test_int).to eq(15)
         end
       end
     end
@@ -129,19 +129,19 @@ shared_examples_for 'a fieldset' do |fields|
       end
 
       it 'should set the prototypes correctly' do
-        fieldset_class.prototypes.should include([:test_int, Net::NTLM::Int64LE, {:value=>15}])
+        expect(fieldset_class.prototypes).to include([:test_int, Net::NTLM::Int64LE, {:value=>15}])
       end
 
       it 'should set the names correctly' do
-        fieldset_class.names.should include(:test_int)
+        expect(fieldset_class.names).to include(:test_int)
       end
 
       it 'should set the types correctly' do
-        fieldset_class.types.should include(Net::NTLM::Int64LE)
+        expect(fieldset_class.types).to include(Net::NTLM::Int64LE)
       end
 
       it 'should set the opts correctly' do
-        fieldset_class.opts.should include({:value => 15})
+        expect(fieldset_class.opts).to include({:value => 15})
       end
 
       context 'when creating an instance' do
@@ -150,11 +150,11 @@ shared_examples_for 'a fieldset' do |fields|
         end
 
         it 'should have the new accessor' do
-          fieldset_object.should respond_to :test_int
+          expect(fieldset_object).to respond_to(:test_int)
         end
 
         it 'should have the correct default value' do
-          fieldset_object.test_int.should == 15
+          expect(fieldset_object.test_int).to eq(15)
         end
       end
     end
@@ -165,19 +165,19 @@ shared_examples_for 'a fieldset' do |fields|
       end
 
       it 'should set the prototypes correctly' do
-        fieldset_class.prototypes.should include([:test_buffer, Net::NTLM::SecurityBuffer, {:value=>15}])
+        expect(fieldset_class.prototypes).to include([:test_buffer, Net::NTLM::SecurityBuffer, {:value=>15}])
       end
 
       it 'should set the names correctly' do
-        fieldset_class.names.should include(:test_buffer)
+        expect(fieldset_class.names).to include(:test_buffer)
       end
 
       it 'should set the types correctly' do
-        fieldset_class.types.should include(Net::NTLM::SecurityBuffer)
+        expect(fieldset_class.types).to include(Net::NTLM::SecurityBuffer)
       end
 
       it 'should set the opts correctly' do
-        fieldset_class.opts.should include({:value => 15})
+        expect(fieldset_class.opts).to include({:value => 15})
       end
 
       context 'when creating an instance' do
@@ -186,11 +186,11 @@ shared_examples_for 'a fieldset' do |fields|
         end
 
         it 'should have the new accessor' do
-          fieldset_object.should respond_to :test_buffer
+          expect(fieldset_object).to respond_to :test_buffer
         end
 
         it 'should have the correct default value' do
-          fieldset_object.test_buffer.should == 15
+          expect(fieldset_object.test_buffer).to eq(15)
         end
       end
     end
@@ -221,15 +221,15 @@ shared_examples_for 'a fieldset' do |fields|
 
         context "#{field[:name]}" do
           it "should be a #{field[:class].to_s}" do
-            fieldset_object[field[:name]].class.should == field[:class]
+            expect(fieldset_object[field[:name]].class).to eq(field[:class])
           end
 
           it "should have a default value of #{field[:value]}" do
-            fieldset_object[field[:name]].value.should == field[:value]
+            expect(fieldset_object[field[:name]].value).to eq(field[:value])
           end
 
           it "should have active set to #{field[:active]}" do
-            fieldset_object[field[:name]].active.should == field[:active]
+            expect(fieldset_object[field[:name]].active).to eq(field[:active])
           end
         end
       end

@@ -15,11 +15,11 @@ shared_examples_for 'a field' do  | value, active|
 
 
   it 'should set the value from initialize options' do
-    subject.value.should == value
+    expect(subject.value).to eq(value)
   end
 
   it 'should set active from initialize options' do
-    subject.active.should == active
+    expect(subject.active).to eq(active)
   end
 
 end

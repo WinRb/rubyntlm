@@ -21,14 +21,14 @@ shared_examples_for 'a message' do |flags|
 
   flags.each do |flag|
     it "should be able to check if the #{flag} flag is set" do
-      test_message.has_flag?(flag).should == true
+      expect(test_message.has_flag?(flag)).to be(true)
     end
   end
 
 
   it 'should be able to set a new flag' do
     test_message.set_flag(:DOMAIN_SUPPLIED)
-    test_message.has_flag?(:DOMAIN_SUPPLIED).should == true
+    expect(test_message.has_flag?(:DOMAIN_SUPPLIED)).to be(true)
   end
 
 

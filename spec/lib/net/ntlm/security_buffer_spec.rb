@@ -24,26 +24,26 @@ describe Net::NTLM::SecurityBuffer do
       domain_security_buffer.value = 'DOMAIN1'
     end
     it 'should change the value' do
-      domain_security_buffer.value.should == 'DOMAIN1'
+      expect(domain_security_buffer.value).to eq('DOMAIN1')
     end
 
     it 'should adjust the length field to the size of the new value' do
-      domain_security_buffer.length.should == 7
+      expect(domain_security_buffer.length).to eq(7)
     end
 
     it 'should adjust the allocated field to the size of the new value' do
-      domain_security_buffer.allocated.should == 7
+      expect(domain_security_buffer.allocated).to eq(7)
     end
   end
 
   context '#data_size' do
     it 'should return the size of the value if active' do
-      domain_security_buffer.data_size.should == 11
+      expect(domain_security_buffer.data_size).to eq(11)
     end
 
     it 'should return 0 if inactive' do
       domain_security_buffer.active = false
-      domain_security_buffer.data_size.should == 0
+      expect(domain_security_buffer.data_size).to eq(0)
     end
   end
 
@@ -56,8 +56,8 @@ describe Net::NTLM::SecurityBuffer do
       # The offset that the actual value begins at is also 8
       offset = "\x08\x00\x00\x00"
       string_to_parse = "#{length}#{allocated}#{offset}FooBarBaz"
-      domain_security_buffer.parse(string_to_parse).should == 8
-      domain_security_buffer.value.should == 'FooBarBa'
+      expect(domain_security_buffer.parse(string_to_parse)).to eq(8)
+      expect(domain_security_buffer.value).to eq('FooBarBa')
     end
 
   end

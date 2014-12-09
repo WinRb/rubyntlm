@@ -9,7 +9,7 @@ shared_examples_for 'an integer field' do  |values|
 
   context '#serialize' do
     it 'should serialize properly with an integer value' do
-      subject.serialize.should == values[:default_hex]
+      expect(subject.serialize).to eq(values[:default_hex])
     end
 
     it 'should raise an Exception for a String' do
@@ -25,18 +25,18 @@ shared_examples_for 'an integer field' do  |values|
 
   context '#parse' do
     it "should parse a raw #{values[:bits].to_s}-bit integer from a string" do
-      subject.parse(values[:alt_hex]).should == values[:size]
-      subject.value.should == values[:alt]
+      expect(subject.parse(values[:alt_hex])).to eq(values[:size])
+      expect(subject.value).to eq(values[:alt])
     end
 
     it "should use an offset to find the #{values[:bits].to_s}-bit integer in the string" do
-      subject.parse("Value:#{values[:alt_hex]}",6).should == values[:size]
-      subject.value.should == values[:alt]
+      expect(subject.parse("Value:#{values[:alt_hex]}",6)).to eq(values[:size])
+      expect(subject.value).to eq(values[:alt])
     end
 
     it 'should return 0 and not change the value if the string is not big enough' do
-      subject.parse(values[:small]).should == 0
-      subject.value.should == values[:default]
+      expect(subject.parse(values[:small])).to eq(0)
+      expect(subject.value).to eq(values[:default])
     end
   end
 
