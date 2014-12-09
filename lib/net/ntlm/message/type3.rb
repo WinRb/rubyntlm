@@ -13,18 +13,10 @@ module Net
         security_buffer :user,          {:value => ""}
         security_buffer :workstation,   {:value => ""}
         security_buffer :session_key,   {:value => "", :active => false }
-        int64LE         :flag,          {:value => 0, :active => false }
+        int32LE         :flag,          {:value => 0, :active => false }
+        string          :os_version,    {:size => 8, :active => false }
 
         class << Type3
-          # Parse a Type 3 packet
-          # @param [String] str A string containing Type 3 data
-          # @return [Type2]
-          def parse(str)
-            t = new
-            t.parse(str)
-            t
-          end
-
           # Builds a Type 3 packet
           # @note All options must be properly encoded with either unicode or oem encoding
           # @return [Type3]
@@ -58,11 +50,82 @@ module Net
             t
           end
         end
+
+        # @param server_challenge (see #password?)
+        def blank_password?(server_challenge)
+          password?('', server_challenge)
+        end
+
+        # @param password [String]
+        # @param server_challenge [String] The server's {Type2#challenge challenge} from the
+        #   {Type2} message for which this object is a response.
+        # @return [true] if +password+ was the password used to generate this
+        #   {Type3} message
+        # @return [false] otherwise
+        def password?(password, server_challenge)
+          case ntlm_version
+          when :ntlm2_session
+            ntlm2_session_password?(password, server_challenge)
+          when :ntlmv2
+            ntlmv2_password?(password, server_challenge)
+          else
+            raise
+          end
+        end
+
+        # @return [Symbol]
+        def ntlm_version
+          if ntlm_response.size == 24 && lm_response[0,8] != "\x00"*8 && lm_response[8,16] == "\x00"*16
+            :ntlm2_session
+          elsif ntlm_response.size == 24
+            :ntlmv1
+          elsif ntlm_response.size > 24
+            :ntlmv2
+          end
+        end
+
+        private
+
+        def ntlm2_session_password?(password, server_challenge)
+          hash = ntlm_response
+          _lm, empty_hash = NTLM.ntlm2_session(
+            {
+              :ntlm_hash => NTLM.ntlm_hash(password),
+              :challenge => server_challenge,
+            },
+            {
+              :client_challenge => lm_response[0,8]
+            }
+          )
+          hash == empty_hash
+        end
+
+        def ntlmv2_password?(password, server_challenge)
+
+          # The first 16 bytes of the ntlm_response are the HMAC of the blob
+          # that follows it.
+          blob = Blob.new
+          blob.parse(ntlm_response[16..-1])
+
+          empty_hash = NTLM.ntlmv2_response(
+            {
+              # user and domain came from the serialized data here, so
+              # they're already unicode
+              :ntlmv2_hash => NTLM.ntlmv2_hash(user, '', domain, :unicode => true),
+              :challenge => server_challenge,
+              :target_info => blob.target_info
+            },
+            {
+              :client_challenge => blob.challenge,
+              # The blob's timestamp is already in milliseconds since 1601,
+              # so convert it back to epoch time first
+              :timestamp => (blob.timestamp / 10_000_000) - NTLM::TIME_OFFSET,
+            }
+          )
+
+          empty_hash == ntlm_response
+        end
       end
-
-
     end
   end
 end
-
-

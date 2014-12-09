@@ -11,7 +11,7 @@ describe Net::NTLM::Message::Type2 do
       { :name => :flag, :class => Net::NTLM::Int32LE, :value =>  Net::NTLM::DEFAULT_FLAGS[:TYPE2], :active => true },
       { :name => :target_name, :class => Net::NTLM::SecurityBuffer, :value => '', :active => true },
       { :name => :target_info, :class => Net::NTLM::SecurityBuffer, :value =>  '', :active => false },
-      { :name => :padding, :class => Net::NTLM::String, :value => '', :active => false },
+      { :name => :os_version, :class => Net::NTLM::String, :value => '', :active => false },
   ]
   flags = [
       :UNICODE
@@ -28,9 +28,7 @@ describe Net::NTLM::Message::Type2 do
     expect(t2.challenge).to eq(14872292244261496103)
     expect(t2.context).to eq(0)
     expect(t2.flag).to eq(42631685)
-    if "".respond_to?(:force_encoding)
-      expect(t2.padding).to eq(("\x06\x01\xB1\x1D\0\0\0\x0F".force_encoding('ASCII-8BIT')))
-    end
+    expect(t2.os_version).to eq(['0601b11d0000000f'].pack('H*'))
     expect(t2.sign).to eq("NTLMSSP\0")
 
     t2_target_info = Net::NTLM::EncodeUtil.decode_utf16le(t2.target_info)
@@ -51,14 +49,14 @@ describe Net::NTLM::Message::Type2 do
     t2.challenge = source.challenge
     t2.context = source.context
     t2.flag = source.flag
-    t2.padding = source.padding
+    t2.os_version = source.os_version
     t2.sign = source.sign
     t2.target_info = source.target_info
     t2.target_name = source.target_name
     t2.type = source.type
     t2.enable(:context)
     t2.enable(:target_info)
-    t2.enable(:padding)
+    t2.enable(:os_version)
 
     expect(t2.encode64).to eq(type2_packet)
   end
@@ -85,4 +83,50 @@ describe Net::NTLM::Message::Type2 do
     t3 = t2.response({:user => 'vagrant', :password => 'vagrant', :domain => 'domain'}, {:ntlmv2 => true, :workstation => 'kobe.local'})
     expect(t3.domain).to eq("D\0O\0M\0A\0I\0N\0")
   end
+
+  describe '.parse' do
+    subject(:message) { described_class.parse(data) }
+    # http://davenport.sourceforge.net/ntlm.html#appendixC7
+    context 'NTLM2 Session Response Authentication; NTLM2 Signing and Sealing Using the 128-bit NTLM2 Session Response User Session Key With Key Exchange Negotiated' do
+      let(:data) do
+        [
+          '4e544c4d53535000020000000c000c0030000000358289e0677f1c557a5ee96c' \
+          '0000000000000000460046003c00000054004500530054004e00540002000c00' \
+          '54004500530054004e00540001000c004d0045004d0042004500520003001e00' \
+          '6d0065006d006200650072002e0074006500730074002e0063006f006d000000' \
+          '0000'
+        ].pack('H*')
+      end
+
+      it 'should set the magic' do
+        expect(message.sign).to eql(Net::NTLM::SSP_SIGN)
+      end
+      it 'should set the type' do
+        expect(message.type).to eq(2)
+      end
+      it 'should set the target name' do
+        # TESTNT
+        expect(message.target_name).to eq(["54004500530054004e005400"].pack('H*'))
+      end
+      it 'should set the flags' do
+        expect(message.flag).to eq(0xe0898235)
+      end
+      it 'should set the challenge' do
+        expect(message.challenge).to eq(0x6ce95e7a551c7f67)
+      end
+      it 'should set an empty context' do
+        expect(message.context).to be_zero
+      end
+      it 'should set target info' do
+        ti = [
+          '02000c0054004500530054004e00540001000c004d0045004d00420045005200' \
+          '03001e006d0065006d006200650072002e0074006500730074002e0063006f00' \
+          '6d0000000000'
+        ].pack('H*')
+        expect(message.target_info).to eq(ti)
+      end
+
+    end
+  end
+
 end

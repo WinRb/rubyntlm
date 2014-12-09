@@ -5,39 +5,14 @@ module Net
       # @private false
       class Type2 < Message
 
-        string        :sign,         {:size => 8, :value => SSP_SIGN}
-        int32LE       :type,      {:value => 2}
-        security_buffer   :target_name,  {:size => 0, :value => ""}
-        int32LE       :flag,         {:value => DEFAULT_FLAGS[:TYPE2]}
-        int64LE           :challenge,    {:value => 0}
-        int64LE           :context,      {:value => 0, :active => false}
-        security_buffer   :target_info,  {:value => "", :active => false}
-        string        :padding,   {:size => 0, :value => "", :active => false }
-
-        class << Type2
-          # Parse a Type 2 packet
-          # @param [String] str A string containing Type 2 data
-          # @return [Type2]
-          def parse(str)
-            t = new
-            t.parse(str)
-            t
-          end
-        end
-
-        # @!visibility private
-        def parse(str)
-          super(str)
-          if has_flag?(:TARGET_INFO)
-            enable(:context)
-            enable(:target_info)
-            super(str)
-          end
-          if ( (len = data_edge - head_size) > 0)
-            self.padding = "\0" * len
-            super(str)
-          end
-        end
+        string          :sign,        { :size => 8, :value => SSP_SIGN }
+        int32LE         :type,        { :value => 2 }
+        security_buffer :target_name, { :size => 0, :value => "" }
+        int32LE         :flag,        { :value => DEFAULT_FLAGS[:TYPE2] }
+        int64LE         :challenge,   { :value => 0}
+        int64LE         :context,     { :value => 0, :active => false }
+        security_buffer :target_info, { :value => "", :active => false }
+        string          :os_version,  { :size => 8, :value => "", :active => false }
 
         # Generates a Type 3 response based on the Type 2 Information
         # @return [Type3]
@@ -45,9 +20,9 @@ module Net
         # @option arg [String] :password The user's password
         # @option arg [String] :domain ('') The domain to authenticate to
         # @option opt [String] :workstation (Socket.gethostname) The name of the calling workstation
-        # @option opt [Boolean] :use_default_target (False) Use the domain supplied by the server in the Type 2 packet
+        # @option opt [Boolean] :use_default_target (false) Use the domain supplied by the server in the Type 2 packet
         # @note An empty :domain option authenticates to the local machine.
-        # @note The :use_default_target has presidence over the :domain option
+        # @note The :use_default_target has precedence over the :domain option
         def response(arg, opt = {})
           usr = arg[:user]
           pwd = arg[:password]
@@ -115,9 +90,8 @@ module Net
                            :flag => self.flag
                        })
         end
+
       end
-
-
 
     end
   end

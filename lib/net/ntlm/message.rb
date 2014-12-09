@@ -23,6 +23,7 @@ module NTLM
       :TARGET_INFO          => 0x00800000,
       :NTLM2_KEY            => 0x00080000,
       :KEY128               => 0x20000000,
+      :KEY_EXCHANGE         => 0x40000000,
       :KEY56                => 0x80000000
   }.freeze
 
@@ -42,14 +43,14 @@ module NTLM
         m = Type0.new
         m.parse(str)
         case m.type
-          when 1
-            t = Type1.parse(str)
-          when 2
-            t = Type2.parse(str)
-          when 3
-            t = Type3.parse(str)
-          else
-            raise ArgumentError, "unknown type: #{m.type}"
+        when 1
+          t = Type1.new.parse(str)
+        when 2
+          t = Type2.new.parse(str)
+        when 3
+          t = Type3.new.parse(str)
+        else
+          raise ArgumentError, "unknown type: #{m.type}"
         end
         t
       end
@@ -57,6 +58,19 @@ module NTLM
       def decode64(str)
         parse(Base64.decode64(str))
       end
+    end
+
+    # @return [self]
+    def parse(str)
+      super
+
+      while has_disabled_fields? && serialize.size < str.size
+        # enable the next disabled field
+        self.class.names.find { |name| !self[name].active && enable(name) }
+        super
+      end
+
+      self
     end
 
     def has_flag?(flag)
