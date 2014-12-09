@@ -48,7 +48,7 @@ def main
 	
 	unless $user and $passwd
 		target = t2.target_name
-		target = Net::NTLM::decode_utf16le(target) if t2.has_flag?(:UNICODE)
+		target = Net::NTLM::EncodeUtil.decode_utf16le(target) if t2.has_flag?(:UNICODE)
 		puts "Target: #{target}"
 		print "User name: "
 		($user = $stdin.readline).chomp!
