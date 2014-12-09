@@ -11,7 +11,7 @@ module Net
       DEFAULT_FLAGS = NTLM::FLAGS[:UNICODE] | NTLM::FLAGS[:OEM] |
         NTLM::FLAGS[:SIGN]   | NTLM::FLAGS[:SEAL]         | NTLM::FLAGS[:REQUEST_TARGET] |
         NTLM::FLAGS[:NTLM]   | NTLM::FLAGS[:ALWAYS_SIGN]  | NTLM::FLAGS[:NTLM2_KEY] |
-        NTLM::FLAGS[:KEY128] | NTLM::FLAGS[:NEG_KEY_EXCH] | NTLM::FLAGS[:KEY56]
+        NTLM::FLAGS[:KEY128] | NTLM::FLAGS[:KEY_EXCHANGE] | NTLM::FLAGS[:KEY56]
 
       attr_reader :flags
 
@@ -189,7 +189,7 @@ module Net
       end
 
       def negotiate_key_exchange?
-        type2_message.has_flag? :NEG_KEY_EXCH
+        type2_message.has_flag? :KEY_EXCHANGE
       end
 
       def username

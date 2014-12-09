@@ -20,7 +20,7 @@ describe Net::NTLM::Client do
       expect(t2.has_flag?(:ALWAYS_SIGN)).to be true
       expect(t2.has_flag?(:NTLM2_KEY)).to be true
       expect(t2.has_flag?(:KEY128)).to be true
-      expect(t2.has_flag?(:NEG_KEY_EXCH)).to be true
+      expect(t2.has_flag?(:KEY_EXCHANGE)).to be true
       expect(t2.has_flag?(:KEY56)).to be true
     end
 
@@ -40,7 +40,7 @@ describe Net::NTLM::Client do
       expect(t2.has_flag?(:ALWAYS_SIGN)).to be false
       expect(t2.has_flag?(:NTLM2_KEY)).to be false
       expect(t2.has_flag?(:KEY128)).to be false
-      expect(t2.has_flag?(:NEG_KEY_EXCH)).to be false
+      expect(t2.has_flag?(:KEY_EXCHANGE)).to be false
       expect(t2.has_flag?(:KEY56)).to be false
     end
 
@@ -56,7 +56,7 @@ describe Net::NTLM::Client do
     let(:client_to_server_sign_key) {["3c4918ff0b33e2603e5d7ceaf34bb7d5"].pack("H*")}
     let(:client_to_server_seal_key) {["51eb7030ed5875e5c33e4501d27edbac"].pack("H*")}
 
-    it "signs a message and when NEG_KEY_EXCH is true" do
+    it "signs a message and when KEY_EXCHANGE is true" do
       expect(inst).to receive(:client_to_server_sign_key).and_return(client_to_server_sign_key)
       expect(inst).to receive(:client_to_server_seal_key).and_return(client_to_server_seal_key)
       expect(inst).to receive(:negotiate_key_exchange?).and_return(true)
