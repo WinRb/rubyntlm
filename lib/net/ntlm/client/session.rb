@@ -45,13 +45,23 @@ module Net
       end
 
       def sign_message(message)
-        seq = self.sequence
+        seq = sequence
         sig = OpenSSL::HMAC.digest(OpenSSL::Digest::MD5.new, client_sign_key, "#{seq}#{message}")[0..7]
         if negotiate_key_exchange?
           sig = client_cipher.update sig
           sig << client_cipher.final
         end
         "#{VERSION_MAGIC}#{sig}#{seq}"
+      end
+
+      def verify_signature(signature, message)
+        seq = signature[-4..-1]
+        sig = OpenSSL::HMAC.digest(OpenSSL::Digest::MD5.new, server_sign_key, "#{seq}#{message}")[0..7]
+        if negotiate_key_exchange?
+          sig = server_cipher.update sig
+          sig << server_cipher.final
+        end
+        "#{VERSION_MAGIC}#{sig}#{seq}" == signature
       end
 
       def seal_message(message)
@@ -64,13 +74,9 @@ module Net
         message + server_cipher.final
       end
 
-      def verify_signature(signature, message)
-        seq = signature[-4..-1]
-        presig = OpenSSL::HMAC.digest(OpenSSL::Digest::MD5.new, server_sign_key, "#{seq}#{message}")
-        enc = server_cipher.update presig[0..7]
-        enc << server_cipher.final
-        "#{VERSION_MAGIC}#{enc}#{seq}" == signature
-      end
+
+      private
+
 
       def user_session_key
         @user_session_key ||=  nil
@@ -88,6 +94,14 @@ module Net
 
       def sequence
         [raw_sequence].pack("V*")
+      end
+
+      def raw_sequence
+        if defined? @raw_sequence
+          @raw_sequence += 1
+        else
+          @raw_sequence = 0
+        end
       end
 
       def client_sign_key
@@ -124,14 +138,6 @@ module Net
             rc4.key = server_seal_key
             rc4
           end
-      end
-
-      def raw_sequence
-        if defined? @raw_sequence
-          @raw_sequence += 1
-        else
-          @raw_sequence = 0
-        end
       end
 
       def client_challenge
