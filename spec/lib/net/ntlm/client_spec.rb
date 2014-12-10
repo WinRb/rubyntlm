@@ -24,6 +24,17 @@ describe Net::NTLM::Client do
       expect(t2.has_flag?(:KEY56)).to be true
     end
 
+    it "clears instance variables on new init_context" do
+      inst.instance_variable_set :@user_session_key, "BADKEY"
+      expect(inst.user_session_key).to eq("BADKEY")
+      inst.init_context
+      expect(inst.user_session_key).to be_nil
+      expect(inst.instance_variable_get(:@username)).to eq("test")
+      expect(inst.instance_variable_get(:@password)).to eq("test01")
+      expect(inst.instance_variable_get(:@workstation)).to eq("testhost")
+      expect(inst.instance_variable_get(:@flags)).to eq(Net::NTLM::Client::DEFAULT_FLAGS)
+    end
+
     it "returns a Type1 message with custom flags" do
       flags = Net::NTLM::FLAGS[:UNICODE] | Net::NTLM::FLAGS[:REQUEST_TARGET] | Net::NTLM::FLAGS[:NTLM]
       inst = Net::NTLM::Client.new("test", "test01", workstation: "testhost", flags: flags)

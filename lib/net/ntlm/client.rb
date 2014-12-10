@@ -25,6 +25,7 @@ module Net
 
       def init_context(resp = nil)
         if resp.nil?
+          clear_state!
           type1_message
         else
           type3_message resp
@@ -80,6 +81,12 @@ module Net
 
       private
 
+
+      def clear_state!
+        (self.instance_variables - [:@username, :@password, :@domain, :@workstation, :@flags]).each do |v|
+          self.instance_variable_set v, nil
+        end
+      end
 
       def type1_message
         type1 = Message::Type1.new
