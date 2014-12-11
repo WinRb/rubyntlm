@@ -141,7 +141,7 @@ module Net
       end
 
       def client_challenge
-        @client_challenge ||= [rand(MAX64)].pack("Q")
+        @client_challenge ||= NTLM.pack_int64le(rand(MAX64))
       end
 
       def server_challenge

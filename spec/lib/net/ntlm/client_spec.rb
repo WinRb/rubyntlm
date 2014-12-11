@@ -7,21 +7,21 @@ describe Net::NTLM::Client do
   describe "#init_context" do
 
     it "returns a default Type1 message" do
-      t2 = inst.init_context
-      expect(t2).to be_instance_of Net::NTLM::Message::Type1
-      expect(t2.domain).to eq("")
-      expect(t2.workstation).to eq("testhost")
-      expect(t2.has_flag?(:UNICODE)).to be true
-      expect(t2.has_flag?(:OEM)).to be true
-      expect(t2.has_flag?(:SIGN)).to be true
-      expect(t2.has_flag?(:SEAL)).to be true
-      expect(t2.has_flag?(:REQUEST_TARGET)).to be true
-      expect(t2.has_flag?(:NTLM)).to be true
-      expect(t2.has_flag?(:ALWAYS_SIGN)).to be true
-      expect(t2.has_flag?(:NTLM2_KEY)).to be true
-      expect(t2.has_flag?(:KEY128)).to be true
-      expect(t2.has_flag?(:KEY_EXCHANGE)).to be true
-      expect(t2.has_flag?(:KEY56)).to be true
+      t1 = inst.init_context
+      expect(t1).to be_instance_of Net::NTLM::Message::Type1
+      expect(t1.domain).to eq("")
+      expect(t1.workstation).to eq("testhost")
+      expect(t1).to have_flag(:UNICODE)
+      expect(t1).to have_flag(:OEM)
+      expect(t1).to have_flag(:SIGN)
+      expect(t1).to have_flag(:SEAL)
+      expect(t1).to have_flag(:REQUEST_TARGET)
+      expect(t1).to have_flag(:NTLM)
+      expect(t1).to have_flag(:ALWAYS_SIGN)
+      expect(t1).to have_flag(:NTLM2_KEY)
+      expect(t1).to have_flag(:KEY128)
+      expect(t1).to have_flag(:KEY_EXCHANGE)
+      expect(t1).to have_flag(:KEY56)
     end
 
     it "clears session variable on new init_context" do
@@ -34,21 +34,21 @@ describe Net::NTLM::Client do
     it "returns a Type1 message with custom flags" do
       flags = Net::NTLM::FLAGS[:UNICODE] | Net::NTLM::FLAGS[:REQUEST_TARGET] | Net::NTLM::FLAGS[:NTLM]
       inst = Net::NTLM::Client.new("test", "test01", :workstation => "testhost", :flags => flags)
-      t2 = inst.init_context
-      expect(t2).to be_instance_of Net::NTLM::Message::Type1
-      expect(t2.domain).to eq("")
-      expect(t2.workstation).to eq("testhost")
-      expect(t2.has_flag?(:UNICODE)).to be true
-      expect(t2.has_flag?(:OEM)).to be false
-      expect(t2.has_flag?(:SIGN)).to be false
-      expect(t2.has_flag?(:SEAL)).to be false
-      expect(t2.has_flag?(:REQUEST_TARGET)).to be true
-      expect(t2.has_flag?(:NTLM)).to be true
-      expect(t2.has_flag?(:ALWAYS_SIGN)).to be false
-      expect(t2.has_flag?(:NTLM2_KEY)).to be false
-      expect(t2.has_flag?(:KEY128)).to be false
-      expect(t2.has_flag?(:KEY_EXCHANGE)).to be false
-      expect(t2.has_flag?(:KEY56)).to be false
+      t1 = inst.init_context
+      expect(t1).to be_instance_of Net::NTLM::Message::Type1
+      expect(t1.domain).to eq("")
+      expect(t1.workstation).to eq("testhost")
+      expect(t1).to have_flag(:UNICODE)
+      expect(t1).not_to have_flag(:OEM)
+      expect(t1).not_to have_flag(:SIGN)
+      expect(t1).not_to have_flag(:SEAL)
+      expect(t1).to have_flag(:REQUEST_TARGET)
+      expect(t1).to have_flag(:NTLM)
+      expect(t1).not_to have_flag(:ALWAYS_SIGN)
+      expect(t1).not_to have_flag(:NTLM2_KEY)
+      expect(t1).not_to have_flag(:KEY128)
+      expect(t1).not_to have_flag(:KEY_EXCHANGE)
+      expect(t1).not_to have_flag(:KEY56)
     end
 
     it "calls authenticate! when we receive a Challenge Message" do
