@@ -7,7 +7,6 @@ end if ENV["COVERAGE"]
 
 require 'rspec'
 require 'net/ntlm'
-require "pry"
 
 # add project lib directory to load path
 spec_pathname = Pathname.new(__FILE__).dirname
