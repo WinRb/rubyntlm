@@ -24,12 +24,12 @@ module Net
       def authenticate!
         calculate_user_session_key!
         type3_opts = {
-          lm_response:    lmv2_resp,
-          ntlm_response:  ntlmv2_resp,
-          domain:         client.domain,
-          user:           username,
-          workstation:    client.workstation,
-          flag:           (challenge_message.flag & client.flags)
+          :lm_response   => lmv2_resp,
+          :ntlm_response => ntlmv2_resp,
+          :domain        => client.domain,
+          :user          => username,
+          :workstation   => client.workstation,
+          :flag          => (challenge_message.flag & client.flags)
         }
         t3 = Message::Type3.create type3_opts
         if negotiate_key_exchange?
@@ -187,7 +187,7 @@ module Net
       end
 
       def ntlmv2_hash
-        @ntlmv2_hash ||= NTLM.ntlmv2_hash(username, password, domain, {client_challenge: client_challenge, unicode: !use_oem_strings?})
+        @ntlmv2_hash ||= NTLM.ntlmv2_hash(username, password, domain, {:client_challenge => client_challenge, :unicode => !use_oem_strings?})
       end
 
       def calculate_user_session_key!

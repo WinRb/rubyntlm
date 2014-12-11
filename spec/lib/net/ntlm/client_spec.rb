@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Net::NTLM::Client do
-  let(:inst) { Net::NTLM::Client.new("test", "test01", workstation: "testhost") }
+  let(:inst) { Net::NTLM::Client.new("test", "test01", :workstation => "testhost") }
   let(:user_session_key) {["3c4918ff0b33e2603e5d7ceaf34bb7d5"].pack("H*")}
 
   describe "#init_context" do
@@ -33,7 +33,7 @@ describe Net::NTLM::Client do
 
     it "returns a Type1 message with custom flags" do
       flags = Net::NTLM::FLAGS[:UNICODE] | Net::NTLM::FLAGS[:REQUEST_TARGET] | Net::NTLM::FLAGS[:NTLM]
-      inst = Net::NTLM::Client.new("test", "test01", workstation: "testhost", flags: flags)
+      inst = Net::NTLM::Client.new("test", "test01", :workstation => "testhost", :flags => flags)
       t2 = inst.init_context
       expect(t2).to be_instance_of Net::NTLM::Message::Type1
       expect(t2.domain).to eq("")
