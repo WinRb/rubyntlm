@@ -1,5 +1,5 @@
 require 'spec_helper'
-require_relative '../../../../lib/net/ntlm/version'
+require File.expand_path("#{File.dirname(__FILE__)}/../../../../lib/net/ntlm/version")
 
 describe Net::NTLM::VERSION do
 
