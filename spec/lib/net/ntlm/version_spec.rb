@@ -1,4 +1,5 @@
 require 'spec_helper'
+require_relative '../../../../lib/net/ntlm/version'
 
 describe Net::NTLM::VERSION do
 
