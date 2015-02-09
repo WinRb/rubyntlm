@@ -9,10 +9,13 @@ module Net
 
       attr_reader :username, :password, :domain, :workstation, :flags
 
+      # @note All string parameters should be encoded in UTF-8. The proper
+      #   final encoding for placing in the various {Message}s will be chosen
+      #   based on negotiation with the server.
       def initialize(username, password, opts = {})
         @username     = username
         @password     = password
-        @domain       = opts[:domain] || ""
+        @domain       = opts[:domain] || nil
         @workstation  = opts[:workstation] || nil
         @flags        = opts[:flags] || DEFAULT_FLAGS
       end
