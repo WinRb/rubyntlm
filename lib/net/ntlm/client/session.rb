@@ -21,14 +21,15 @@ module Net
 
       # Generate an NTLMv2 AUTHENTICATE_MESSAGE
       # @see http://msdn.microsoft.com/en-us/library/cc236643.aspx
+      # @return [Net::NTLM::Message::Type3]
       def authenticate!
         calculate_user_session_key!
         type3_opts = {
           :lm_response   => lmv2_resp,
           :ntlm_response => ntlmv2_resp,
-          :domain        => client.domain,
+          :domain        => domain,
           :user          => username,
-          :workstation   => client.workstation,
+          :workstation   => workstation,
           :flag          => (challenge_message.flag & client.flags)
         }
         t3 = Message::Type3.create type3_opts
@@ -151,7 +152,7 @@ module Net
       # epoch -> milsec from Jan 1, 1601
       # @see http://support.microsoft.com/kb/188768
       def timestamp
-        @timestamp ||= 10000000 * (Time.now.to_i + TIME_OFFSET)
+        @timestamp ||= 10_000_000 * (Time.now.to_i + TIME_OFFSET)
       end
 
       def use_oem_strings?
@@ -171,11 +172,11 @@ module Net
       end
 
       def workstation
-        oem_or_unicode_str client.workstation
+        (client.domain ? oem_or_unicode_str(client.workstation) : "")
       end
 
       def domain
-        oem_or_unicode_str client.domain
+        (client.domain ? oem_or_unicode_str(client.domain) : "")
       end
 
       def oem_or_unicode_str(str)
