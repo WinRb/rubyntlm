@@ -5,7 +5,6 @@ SimpleCov.start do
   add_filter '/vendor/'
 end if ENV["COVERAGE"]
 
-
 require 'rspec'
 require 'net/ntlm'
 

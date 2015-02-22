@@ -57,11 +57,9 @@ require 'net/ntlm/message/type1'
 require 'net/ntlm/message/type2'
 require 'net/ntlm/message/type3'
 
-
 require 'net/ntlm/encode_util'
 
-
-
+require 'net/ntlm/client'
 
 module Net
   module NTLM
@@ -135,7 +133,7 @@ module Net
       # @option opt :unicode (false) Unicode encode the domain
       def ntlmv2_hash(user, password, target, opt={})
         ntlmhash = ntlm_hash(password, opt)
-        userdomain = (user + target).upcase
+        userdomain = user.upcase + target
         unless opt[:unicode]
           userdomain = EncodeUtil.encode_utf16le(userdomain)
         end

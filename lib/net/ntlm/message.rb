@@ -20,8 +20,8 @@ module NTLM
       :LOCAL_CALL           => 0x00004000,
       :ALWAYS_SIGN          => 0x00008000,
       :TARGET_TYPE_DOMAIN   => 0x00010000,
-      :TARGET_INFO          => 0x00800000,
       :NTLM2_KEY            => 0x00080000,
+      :TARGET_INFO          => 0x00800000,
       :KEY128               => 0x20000000,
       :KEY_EXCHANGE         => 0x40000000,
       :KEY56                => 0x80000000
