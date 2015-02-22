@@ -7,15 +7,7 @@ module Net
         NTLM::FLAGS[:NTLM]   | NTLM::FLAGS[:ALWAYS_SIGN]  | NTLM::FLAGS[:NTLM2_KEY] |
         NTLM::FLAGS[:KEY128] | NTLM::FLAGS[:KEY_EXCHANGE] | NTLM::FLAGS[:KEY56]
 
-      attr_reader :username
-
-      attr_reader :password
-
-      attr_reader :domain
-
-      attr_reader :workstation
-
-      attr_reader :flags
+      attr_reader :username, :password, :domain, :workstation, :flags
 
       # @note All string parameters should be encoded in UTF-8. The proper
       #   final encoding for placing in the various {Message messages} will be
