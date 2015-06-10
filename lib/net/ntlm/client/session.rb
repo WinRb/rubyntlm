@@ -38,11 +38,22 @@ module Net
           rc4 = OpenSSL::Cipher::Cipher.new("rc4")
           rc4.encrypt
           rc4.key = user_session_key
-          sk = rc4.update master_key
+          sk = rc4.update exported_session_key
           sk << rc4.final
           t3.session_key = sk
         end
         t3
+      end
+
+      def exported_session_key
+        @exported_session_key ||=
+          begin
+            if negotiate_key_exchange?
+              OpenSSL::Cipher.new("rc4").random_key
+            else
+              user_session_key
+            end
+          end
       end
 
       def sign_message(message)
@@ -75,22 +86,11 @@ module Net
         message + server_cipher.final
       end
 
-
       private
 
 
       def user_session_key
         @user_session_key ||=  nil
-      end
-
-      def master_key
-        @master_key ||= begin
-                          if negotiate_key_exchange?
-                            OpenSSL::Cipher.new("rc4").random_key
-                          else
-                            user_session_key
-                          end
-                        end
       end
 
       def sequence
@@ -106,19 +106,19 @@ module Net
       end
 
       def client_sign_key
-        @client_sign_key ||= OpenSSL::Digest::MD5.digest "#{master_key}#{CLIENT_TO_SERVER_SIGNING}"
+        @client_sign_key ||= OpenSSL::Digest::MD5.digest "#{exported_session_key}#{CLIENT_TO_SERVER_SIGNING}"
       end
 
       def server_sign_key
-        @server_sign_key ||= OpenSSL::Digest::MD5.digest "#{master_key}#{SERVER_TO_CLIENT_SIGNING}"
+        @server_sign_key ||= OpenSSL::Digest::MD5.digest "#{exported_session_key}#{SERVER_TO_CLIENT_SIGNING}"
       end
 
       def client_seal_key
-        @client_seal_key ||= OpenSSL::Digest::MD5.digest "#{master_key}#{CLIENT_TO_SERVER_SEALING}"
+        @client_seal_key ||= OpenSSL::Digest::MD5.digest "#{exported_session_key}#{CLIENT_TO_SERVER_SEALING}"
       end
 
       def server_seal_key
-        @server_seal_key ||= OpenSSL::Digest::MD5.digest "#{master_key}#{SERVER_TO_CLIENT_SEALING}"
+        @server_seal_key ||= OpenSSL::Digest::MD5.digest "#{exported_session_key}#{SERVER_TO_CLIENT_SEALING}"
       end
 
       def client_cipher

@@ -42,6 +42,10 @@ module Net
         @session
       end
 
+      def session_key
+        @session.exported_session_key
+      end
+
       private
 
       # @return [Message::Type1]
