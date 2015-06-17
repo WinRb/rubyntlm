@@ -51,17 +51,17 @@ describe Net::NTLM::Client::Session do
     end
   end
 
-  describe "#master_key" do
+  describe "#exported_session_key" do
     it "returns a random 16-byte key when negotiate_key_exchange? is true" do
       expect(inst).to receive(:negotiate_key_exchange?).and_return(true)
       expect(inst).not_to receive(:user_session_key)
-      inst.send :master_key
+      inst.exported_session_key
     end
 
     it "returns the user_session_key when negotiate_key_exchange? is false" do
       expect(inst).to receive(:negotiate_key_exchange?).and_return(false)
       expect(inst).to receive(:user_session_key).and_return(user_session_key)
-      inst.send :master_key
+      inst.exported_session_key
     end
   end
 
