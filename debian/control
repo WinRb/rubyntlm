@@ -11,6 +11,7 @@ Homepage: <insert the upstream URL, if relevant>
 Package: ruby-ntlm-solnet
 Architecture: all
 Provides: ruby-ntlm
+Conflicts: ruby-ntlm
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: new version of ruby-ntlm
  new version of ruby-ntlm
