@@ -1,0 +1,16 @@
+Source: ruby-ntlm-solnet
+Section: unknown
+Priority: optional
+Maintainer: Marek Veber <Marek.Veber@solnet.cz>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.9.4
+Homepage: <insert the upstream URL, if relevant>
+#Vcs-Git: git://git.debian.org/collab-maint/ruby-ntlm-solnet.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/ruby-ntlm-solnet.git;a=summary
+
+Package: ruby-ntlm-solnet
+Architecture: all
+Provides: ruby-ntlm
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: new version of ruby-ntlm
+ new version of ruby-ntlm
