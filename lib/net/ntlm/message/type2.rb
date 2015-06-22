@@ -77,8 +77,10 @@ module Net
             ar = {:ntlm_hash => NTLM::ntlm_hash(pwd, opt), :challenge => chal}
             lm_res, ntlm_res = NTLM::ntlm2_session(ar, opt)
           else
-            lm_res = NTLM::lm_response(pwd, chal)
-            ntlm_res = NTLM::ntlm_response(pwd, chal)
+            ar = {:lm_hash => NTLM::lm_hash(pwd), :challenge => chal}
+            lm_res = NTLM::lm_response(ar)
+            ar = {:ntlm_hash => NTLM::ntlm_hash(pwd, opt), :challenge => chal}
+            ntlm_res = NTLM::ntlm_response(ar)
           end
 
           Type3.create({
