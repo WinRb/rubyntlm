@@ -1,4 +1,6 @@
 require 'simplecov'
+require 'pathname'
+
 SimpleCov.start do
   add_filter '/spec/'
   add_filter '/config/'

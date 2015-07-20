@@ -51,6 +51,14 @@ describe Net::NTLM do
     expect(Net::NTLM::ntlmv2_hash(user, passwd, domain)).to eq(["04b8e0ba74289cc540826bab1dee63ae"].pack("H*"))
   end
 
+  context 'when a user passes an NTLM hash for pass-the-hash' do
+    let(:passwd) { Net::NTLM::EncodeUtil.encode_utf16le('ff3750bcc2b22412c2265b23734e0dac:cd06ca7c7e10c99b1d33b7485a2ed808') }
+
+    it 'should return the correct ntlmv2 hash' do
+      expect(Net::NTLM::ntlmv2_hash(user, passwd, domain)).to eq(["04b8e0ba74289cc540826bab1dee63ae"].pack("H*"))
+    end
+  end
+
   it 'should generate an lm_response' do
     expect(Net::NTLM::lm_response(
         {

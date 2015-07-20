@@ -71,6 +71,26 @@ module Net
 
     class << self
 
+      # Valid format for LAN Manager hex digest portion: 32 hexadecimal characters.
+      LAN_MANAGER_HEX_DIGEST_REGEXP = /[0-9a-f]{32}/i
+      # Valid format for NT LAN Manager hex digest portion: 32 hexadecimal characters.
+      NT_LAN_MANAGER_HEX_DIGEST_REGEXP = /[0-9a-f]{32}/i
+      # Valid format for an NTLM hash composed of `'<LAN Manager hex digest>:<NT LAN Manager hex digest>'`.
+      DATA_REGEXP = /\A#{LAN_MANAGER_HEX_DIGEST_REGEXP}:#{NT_LAN_MANAGER_HEX_DIGEST_REGEXP}\z/
+
+      # Takes a string and determines whether it is a valid NTLM Hash
+      # @param [String] the string to validate
+      # @return [Boolean] whether or not the string is a valid NTLM hash
+      def is_ntlm_hash?(data)
+        decoded_data = data.dup
+        decoded_data = EncodeUtil.decode_utf16le(decoded_data)
+        if DATA_REGEXP.match(decoded_data)
+          true
+        else
+          false
+        end
+      end
+
       # Conver the value to a 64-Bit Little Endian Int
       # @param [String] val The string to convert
       def pack_int64le(val)
@@ -129,10 +149,15 @@ module Net
       # Generate a NTLMv2 Hash
       # @param [String] user The username
       # @param [String] password The password
-      # @param [String] target The domain or workstaiton to authenticate to
+      # @param [String] target The domain or workstation to authenticate to
       # @option opt :unicode (false) Unicode encode the domain
       def ntlmv2_hash(user, password, target, opt={})
-        ntlmhash = ntlm_hash(password, opt)
+        if is_ntlm_hash? password
+          decoded_password = EncodeUtil.decode_utf16le(password)
+          ntlmhash = [decoded_password.upcase[33,65]].pack('H32')
+        else
+          ntlmhash = ntlm_hash(password, opt)
+        end
         userdomain = user.upcase + target
         unless opt[:unicode]
           userdomain = EncodeUtil.encode_utf16le(userdomain)
