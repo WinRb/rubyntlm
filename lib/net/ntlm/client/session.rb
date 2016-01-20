@@ -172,7 +172,7 @@ module Net
       end
 
       def workstation
-        (client.domain ? oem_or_unicode_str(client.workstation) : "")
+        (client.workstation ? oem_or_unicode_str(client.workstation) : "")
       end
 
       def domain
