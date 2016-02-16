@@ -42,6 +42,7 @@ require 'openssl/digest'
 require 'socket'
 
 # Load Order is important here
+require 'net/ntlm/exceptions'
 require 'net/ntlm/field'
 require 'net/ntlm/int16_le'
 require 'net/ntlm/int32_le'
@@ -60,6 +61,8 @@ require 'net/ntlm/message/type3'
 require 'net/ntlm/encode_util'
 
 require 'net/ntlm/client'
+require 'net/ntlm/channel_binding'
+require 'net/ntlm/target_info'
 
 module Net
   module NTLM

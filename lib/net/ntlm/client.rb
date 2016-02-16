@@ -27,12 +27,12 @@ module Net
       end
 
       # @return [NTLM::Message]
-      def init_context(resp = nil)
+      def init_context(resp = nil, channel_binding = nil)
         if resp.nil?
           @session = nil
           type1_message
         else
-          @session = Client::Session.new(self, Net::NTLM::Message.decode64(resp))
+          @session = Client::Session.new(self, Net::NTLM::Message.decode64(resp), channel_binding)
           @session.authenticate!
         end
       end

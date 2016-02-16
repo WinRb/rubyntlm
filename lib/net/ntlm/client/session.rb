@@ -10,13 +10,14 @@ module Net
       CLIENT_TO_SERVER_SEALING = "session key to client-to-server sealing key magic constant\0"
       SERVER_TO_CLIENT_SEALING = "session key to server-to-client sealing key magic constant\0"
 
-      attr_reader :client, :challenge_message
+      attr_reader :client, :challenge_message, :channel_binding
 
       # @param client [Net::NTLM::Client] the client instance
       # @param challenge_message [Net::NTLM::Message::Type2] server message
-      def initialize(client, challenge_message)
+      def initialize(client, challenge_message, channel_binding = nil)
         @client = client
         @challenge_message = challenge_message
+        @channel_binding = channel_binding
       end
 
       # Generate an NTLMv2 AUTHENTICATE_MESSAGE
@@ -213,9 +214,22 @@ module Net
             b = Blob.new
             b.timestamp = timestamp
             b.challenge = client_challenge
-            b.target_info = challenge_message.target_info
+            b.target_info = target_info
             b.serialize
           end
+      end
+
+      def target_info
+        @target_info ||= begin
+          if channel_binding
+            t = Net::NTLM::TargetInfo.new(challenge_message.target_info)
+            av_id = Net::NTLM::TargetInfo::MSV_AV_CHANNEL_BINDINGS
+            t.av_pairs[av_id] = channel_binding.channel_binding_token
+            t.to_s
+          else
+            challenge_message.target_info
+          end
+        end
       end
 
     end
