@@ -55,7 +55,7 @@ describe Net::NTLM::Client do
       t2_challenge = "TlRMTVNTUAACAAAADAAMADgAAAA1goriAAyk1DmJUnUAAAAAAAAAAFAAUABEAAAABgLwIwAAAA9TAEUAUgBWAEUAUgACAAwAUwBFAFIAVgBFAFIAAQAMAFMARQBSAFYARQBSAAQADABzAGUAcgB2AGUAcgADAAwAcwBlAHIAdgBlAHIABwAIADd7mrNaB9ABAAAAAA=="
       session = double("session")
       expect(session).to receive(:authenticate!)
-      expect(Net::NTLM::Client::Session).to receive(:new).with(inst, instance_of(Net::NTLM::Message::Type2)).and_return(session)
+      expect(Net::NTLM::Client::Session).to receive(:new).with(inst, instance_of(Net::NTLM::Message::Type2), nil).and_return(session)
       inst.init_context t2_challenge
     end
 
