@@ -1,0 +1,11 @@
+ruby-ntlm-solnet (0.4.0-solnet2) unstable; urgency=medium
+
+  * fix - conflict with ruby-ntlm
+
+ -- Marek Veber <Marek.Veber@solnet.cz>  Mon, 22 Jun 2015 12:06:34 +0200
+
+ruby-ntlm-solnet (0.4.0-solnet1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Marek Veber <Marek.Veber@solnet.cz>  Mon, 22 Jun 2015 10:18:06 +0200

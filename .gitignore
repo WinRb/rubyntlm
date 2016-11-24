@@ -1,3 +1,8 @@
 .yardoc
 /doc
 Gemfile.lock
+debian/files
+debian/ruby-ntlm-solnet.debhelper.log
+debian/ruby-ntlm-solnet.substvars
+debian/ruby-ntlm-solnet/
+
