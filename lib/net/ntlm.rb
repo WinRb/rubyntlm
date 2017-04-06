@@ -123,7 +123,7 @@ module Net
       end
 
       def apply_des(plain, keys)
-        dec = OpenSSL::Cipher::Cipher.new("des-cbc")
+        dec = OpenSSL::Cipher.new("des-cbc")
         dec.padding = 0
         keys.map {|k|
           dec.key = k
