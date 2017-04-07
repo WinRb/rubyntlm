@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
 
   s.license = 'MIT'
 
+  s.add_development_dependency 'github_changelog_generator', '1.14.3'
   s.add_development_dependency "pry"
   s.add_development_dependency "rake"
   s.add_development_dependency "rspec", ">= 2.11"
