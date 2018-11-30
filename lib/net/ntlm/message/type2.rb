@@ -70,7 +70,8 @@ module Net
           chal = self[:challenge].serialize
 
           if opt[:ntlmv2]
-            ar = {:ntlmv2_hash => NTLM::ntlmv2_hash(usr, pwd, domain, opt), :challenge => chal, :target_info => ti}
+            pwd = [NTLM::EncodeUtil.decode_utf16le(pwd)].pack('H*')
+            ar = {:ntlmv2_hash => pwd, :challenge => chal, :target_info => ti}
             lm_res = NTLM::lmv2_response(ar, opt)
             ntlm_res = NTLM::ntlmv2_response(ar, opt)
           elsif has_flag?(:NTLM2_KEY)
