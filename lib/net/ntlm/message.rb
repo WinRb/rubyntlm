@@ -3,6 +3,7 @@ module NTLM
 
   SSP_SIGN = "NTLMSSP\0"
 
+  # See [2.2.2.5 NEGOTIATE](https://msdn.microsoft.com/en-us/library/cc236650.aspx)
   FLAGS = {
       :UNICODE              => 0x00000001,
       :OEM                  => 0x00000002,
@@ -26,6 +27,12 @@ module NTLM
       :KEY128               => 0x20000000,
       :KEY_EXCHANGE         => 0x40000000,
       :KEY56                => 0x80000000
+      # Undocumented flags:
+      :MBZ9                 => 0x00000008,
+      :NETWARE              => 0x00000100,
+      :NEG_NT_ONLY          => 0x00000400,
+      :MBZ7                 => 0x00000800, # alias for :NEG_ANONYMOUS
+      :LOCAL_CALL           => 0x00004000,
   }.freeze
 
   FLAG_KEYS = FLAGS.keys.sort{|a, b| FLAGS[a] <=> FLAGS[b] }
