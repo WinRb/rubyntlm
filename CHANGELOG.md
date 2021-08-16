@@ -1,10 +1,22 @@
 # Change Log
 
-## [0.6.2](https://github.com/WinRb/rubyntlm/tree/0.6.2) (2017-04-06)
-[Full Changelog](https://github.com/WinRb/rubyntlm/compare/v0.6.1...0.6.2)
+## [0.6.3](https://github.com/WinRb/rubyntlm/tree/0.6.3) (2021-01-26)
+[Full Changelog](https://github.com/WinRb/rubyntlm/compare/v0.6.2...0.6.3)
+
+**Closed issues:**
+
+- Timeout issues with mailcatcher [\#18](https://github.com/WinRb/rubyntlm/issues/18)
 
 **Merged pull requests:**
 
+- Fix an error showing the key not being set on the DES cypher [\#41](https://github.com/WinRb/rubyntlm/pull/41) ([Castone22](https://github.com/Castone22))
+
+## [v0.6.2](https://github.com/WinRb/rubyntlm/tree/v0.6.2) (2017-04-24)
+[Full Changelog](https://github.com/WinRb/rubyntlm/compare/v0.6.1...v0.6.2)
+
+**Merged pull requests:**
+
+- preps 0.6.2 release and adds a changelog generator [\#35](https://github.com/WinRb/rubyntlm/pull/35) ([mwrock](https://github.com/mwrock))
 - Support Ruby 2.4 [\#34](https://github.com/WinRb/rubyntlm/pull/34) ([fwininger](https://github.com/fwininger))
 - ignore pkg directory in git [\#33](https://github.com/WinRb/rubyntlm/pull/33) ([mwrock](https://github.com/mwrock))
 
@@ -15,25 +27,20 @@
 
 - Release 0.6.1 [\#32](https://github.com/WinRb/rubyntlm/pull/32) ([mwrock](https://github.com/mwrock))
 - only test supported rubies and do not test twice [\#31](https://github.com/WinRb/rubyntlm/pull/31) ([mwrock](https://github.com/mwrock))
-- Protect against mutating frozen strings [\#30](https://github.com/WinRb/rubyntlm/pull/30) ([mwrock](https://github.com/mwrock))
 
 ## [v0.6.0](https://github.com/WinRb/rubyntlm/tree/v0.6.0) (2016-02-16)
-[Full Changelog](https://github.com/WinRb/rubyntlm/compare/0.5.3...v0.6.0)
+[Full Changelog](https://github.com/WinRb/rubyntlm/compare/v0.5.3...v0.6.0)
 
 **Closed issues:**
 
 - support Extended Protection for Authentication \(Channel Binding Tokens\) [\#27](https://github.com/WinRb/rubyntlm/issues/27)
 - RubyNTLM is not documented [\#20](https://github.com/WinRb/rubyntlm/issues/20)
 
-**Merged pull requests:**
-
-- Support Extended Protection for Authentication \(Channel binding\) [\#28](https://github.com/WinRb/rubyntlm/pull/28) ([mwrock](https://github.com/mwrock))
+## [v0.5.3](https://github.com/WinRb/rubyntlm/tree/v0.5.3) (2016-01-22)
+[Full Changelog](https://github.com/WinRb/rubyntlm/compare/0.5.3...v0.5.3)
 
 ## [0.5.3](https://github.com/WinRb/rubyntlm/tree/0.5.3) (2016-01-22)
-[Full Changelog](https://github.com/WinRb/rubyntlm/compare/v0.5.3...0.5.3)
-
-## [v0.5.3](https://github.com/WinRb/rubyntlm/tree/v0.5.3) (2016-01-22)
-[Full Changelog](https://github.com/WinRb/rubyntlm/compare/0.5.2...v0.5.3)
+[Full Changelog](https://github.com/WinRb/rubyntlm/compare/0.5.2...0.5.3)
 
 **Merged pull requests:**
 
@@ -44,7 +51,7 @@
 
 **Merged pull requests:**
 
-- Add Pass the Hash capability to the NTLM client [\#24](https://github.com/WinRb/rubyntlm/pull/24) ([dmaloney-r7](https://github.com/dmaloney-r7))
+- Add Pass the Hash capability to the NTLM client [\#24](https://github.com/WinRb/rubyntlm/pull/24) ([thelightcosine](https://github.com/thelightcosine))
 
 ## [0.5.1](https://github.com/WinRb/rubyntlm/tree/0.5.1) (2015-06-23)
 [Full Changelog](https://github.com/WinRb/rubyntlm/compare/0.5.0...0.5.1)
@@ -64,6 +71,8 @@
 
 **Merged pull requests:**
 
+- Protect against mutating frozen strings [\#30](https://github.com/WinRb/rubyntlm/pull/30) ([mwrock](https://github.com/mwrock))
+- Support Extended Protection for Authentication \(Channel binding\) [\#28](https://github.com/WinRb/rubyntlm/pull/28) ([mwrock](https://github.com/mwrock))
 - Encode client and domain in oem/unicode in `Client\#authenticate!` [\#19](https://github.com/WinRb/rubyntlm/pull/19) ([jlee-r7](https://github.com/jlee-r7))
 - require version to fix specs [\#17](https://github.com/WinRb/rubyntlm/pull/17) ([sneal](https://github.com/sneal))
 - Initial go at an NTLM Client that will do session signing/sealing [\#16](https://github.com/WinRb/rubyntlm/pull/16) ([zenchild](https://github.com/zenchild))
@@ -83,7 +92,7 @@
 
 - Add licensing information and clean up attributions to provide licensing... [\#9](https://github.com/WinRb/rubyntlm/pull/9) ([pmorton](https://github.com/pmorton))
 - Upcase the domain [\#8](https://github.com/WinRb/rubyntlm/pull/8) ([pmorton](https://github.com/pmorton))
-- Refactor/refactor classes [\#6](https://github.com/WinRb/rubyntlm/pull/6) ([dmaloney-r7](https://github.com/dmaloney-r7))
+- Refactor/refactor classes [\#6](https://github.com/WinRb/rubyntlm/pull/6) ([thelightcosine](https://github.com/thelightcosine))
 
 ## [v0.3.4](https://github.com/WinRb/rubyntlm/tree/v0.3.4) (2013-08-08)
 [Full Changelog](https://github.com/WinRb/rubyntlm/compare/v0.3.3...v0.3.4)
@@ -93,7 +102,7 @@
 
 **Merged pull requests:**
 
-- Typo in NTLM namespace calls [\#4](https://github.com/WinRb/rubyntlm/pull/4) ([dmaloney-r7](https://github.com/dmaloney-r7))
+- Typo in NTLM namespace calls [\#4](https://github.com/WinRb/rubyntlm/pull/4) ([thelightcosine](https://github.com/thelightcosine))
 
 ## [v0.3.2](https://github.com/WinRb/rubyntlm/tree/v0.3.2) (2013-06-24)
 [Full Changelog](https://github.com/WinRb/rubyntlm/compare/v0.3.1...v0.3.2)
