@@ -157,7 +157,8 @@ module Net
       end
 
       def use_oem_strings?
-        challenge_message.has_flag? :OEM
+        # @see https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-nlmp/99d90ff4-957f-4c8a-80e4-5bfe5a9a9832
+        !challenge_message.has_flag?(:UNICODE) && challenge_message.has_flag?(:OEM)
       end
 
       def negotiate_key_exchange?
