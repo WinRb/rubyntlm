@@ -26,8 +26,8 @@ module Net
       def authenticate!
         calculate_user_session_key!
         type3_opts = {
-          :lm_response   => lmv2_resp,
-          :ntlm_response => ntlmv2_resp,
+          :lm_response   => is_anonymous? ? "\x00".b : lmv2_resp,
+          :ntlm_response => is_anonymous? ? '' : ntlmv2_resp,
           :domain        => domain,
           :user          => username,
           :workstation   => workstation,
@@ -193,7 +193,12 @@ module Net
       end
 
       def calculate_user_session_key!
-        @user_session_key = OpenSSL::HMAC.digest(OpenSSL::Digest::MD5.new, ntlmv2_hash, nt_proof_str)
+        if is_anonymous?
+          # see MS-NLMP section 3.4
+          @user_session_key = "\x00".b * 16
+        else
+          @user_session_key = OpenSSL::HMAC.digest(OpenSSL::Digest::MD5.new, ntlmv2_hash, nt_proof_str)
+        end
       end
 
       def lmv2_resp
@@ -232,6 +237,9 @@ module Net
         end
       end
 
+      def is_anonymous?
+        username == '' && password == ''
+      end
     end
   end
 end
