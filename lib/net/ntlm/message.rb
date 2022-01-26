@@ -87,7 +87,7 @@ module NTLM
 
     def serialize
       deflag
-      super + security_buffers.map{|n, f| f.value}.join
+      super + security_buffers.map{|n, f| f.value + ("\x00".b * (f.value.length % 2))}.join
     end
 
     def encode64
@@ -117,6 +117,7 @@ module NTLM
       security_buffers.inject(head_size){|cur, a|
         a[1].offset = cur
         cur += a[1].data_size
+        cur += cur % 2
       }
     end
 
