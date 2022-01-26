@@ -87,6 +87,10 @@ module Net
         message + server_cipher.final
       end
 
+      def is_anonymous?
+        username == '' && password == ''
+      end
+
       private
 
 
@@ -236,10 +240,6 @@ module Net
             challenge_message.target_info
           end
         end
-      end
-
-      def is_anonymous?
-        username == '' && password == ''
       end
     end
   end
