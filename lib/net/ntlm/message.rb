@@ -35,7 +35,6 @@ module NTLM
       :TYPE3 => FLAGS[:UNICODE] | FLAGS[:REQUEST_TARGET] | FLAGS[:NTLM] | FLAGS[:ALWAYS_SIGN] | FLAGS[:NTLM2_KEY]
   }
 
-
   # @private false
   class Message < FieldSet
     class << Message
@@ -87,7 +86,7 @@ module NTLM
 
     def serialize
       deflag
-      super + security_buffers.map{|n, f| f.value + ("\x00".b * (f.value.length % 2))}.join
+      super + security_buffers.map{|n, f| f.value + (has_flag?(:UNICODE) ? "\x00".b * (f.value.length % 2) : '')}.join
     end
 
     def encode64
@@ -117,7 +116,7 @@ module NTLM
       security_buffers.inject(head_size){|cur, a|
         a[1].offset = cur
         cur += a[1].data_size
-        cur += cur % 2
+        has_flag?(:UNICODE) ? cur + cur % 2 : cur
       }
     end
 
