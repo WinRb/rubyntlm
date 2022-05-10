@@ -65,4 +65,23 @@ describe Net::NTLM::Client::Session do
     end
   end
 
+  context 'when authenticating anonymously' do
+    let(:inst) { Net::NTLM::Client::Session.new(Net::NTLM::Client.new('', ''), t2_challenge) }
+
+    describe "#authenticate!" do
+      it "should set the response fields correctly" do
+        t3 = inst.authenticate!
+        expect(t3).to be_a(Net::NTLM::Message::Type3)
+        expect(t3.lm_response).to eq("\x00".b)
+        expect(t3.ntlm_response).to eq('')
+      end
+    end
+
+    describe "#is_anonymous?" do
+      it "should be true" do
+        expect(inst.is_anonymous?).to be_truthy
+      end
+    end
+  end
+
 end
