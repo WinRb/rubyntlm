@@ -59,6 +59,8 @@ require 'net/ntlm/message/type2'
 require 'net/ntlm/message/type3'
 
 require 'net/ntlm/encode_util'
+require 'net/ntlm/md4'
+require 'net/ntlm/rc4'
 
 require 'net/ntlm/client'
 require 'net/ntlm/channel_binding'
@@ -124,9 +126,9 @@ module Net
 
       def apply_des(plain, keys)
         keys.map {|k|
-          dec = OpenSSL::Cipher.new("des-cbc").encrypt
+          dec = OpenSSL::Cipher.new("des-ede-cbc").encrypt
           dec.padding = 0
-          dec.key = k
+          dec.key = k + k
           dec.update(plain) + dec.final
         }
       end
@@ -146,7 +148,7 @@ module Net
         unless opt[:unicode]
           pwd = EncodeUtil.encode_utf16le(pwd)
         end
-        OpenSSL::Digest::MD4.digest pwd
+        Net::NTLM::Md4.digest pwd
       end
 
       # Generate a NTLMv2 Hash
