@@ -222,4 +222,27 @@ describe Net::NTLM::Message::Type3 do
 
   end
 
+  describe '#serialize' do
+    context 'when the username contains non-ASCI characters' do
+      let(:t3) {
+        t2 = Net::NTLM::Message::Type2.new
+        t2.response(
+          {
+            :user => 'Hélène',
+            :password => '123456',
+            :domain => ''
+          },
+          {
+            :ntlmv2 => true,
+            :workstation => 'testlab.local'
+          }
+        )
+      }
+
+      it 'serializes without error' do
+        expect { t3.serialize }.not_to raise_error
+      end
+    end
+  end
+
 end

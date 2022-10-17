@@ -161,7 +161,18 @@ module Net
         else
           ntlmhash = ntlm_hash(password, opt)
         end
-        userdomain = user.upcase + target
+
+        if opt[:unicode]
+          # Uppercase operation on username containing non-ASCI characters
+          # after behing unicode encoded with `EncodeUtil.encode_utf16le`
+          # doesn't play well. Upcase should be done before encoding.
+          user_upcase = EncodeUtil.decode_utf16le(user).upcase
+          user_upcase = EncodeUtil.encode_utf16le(user_upcase)
+        else
+          user_upcase = user.upcase
+        end
+        userdomain = user_upcase + target
+
         unless opt[:unicode]
           userdomain = EncodeUtil.encode_utf16le(userdomain)
         end
