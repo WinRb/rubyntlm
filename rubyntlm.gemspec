@@ -26,4 +26,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rake"
   s.add_development_dependency "rspec", ">= 2.11"
   s.add_development_dependency "simplecov"
+  s.add_dependency "base64"
 end
