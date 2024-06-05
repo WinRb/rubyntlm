@@ -146,6 +146,10 @@ module Net
         unless opt[:unicode]
           pwd = EncodeUtil.encode_utf16le(pwd)
         end
+
+        # OpenSSL 3 Support
+        OpenSSL::Provider.load("legacy") if defined?(OpenSSL::Provider)
+
         OpenSSL::Digest::MD4.digest pwd
       end
 
