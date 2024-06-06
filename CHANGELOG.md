@@ -1,7 +1,12 @@
 # Change Log
 
-## [0.6.3](https://github.com/WinRb/rubyntlm/tree/0.6.4) (2024-06-06)
-[Full Changelog](https://github.com/WinRb/rubyntlm/compare/v0.6.3...0.6.4)
+## 0.6.4 (2024-06-06)
+
+* Fix applying DES-CBC when using OpenSSL 3 by @paulvt in https://github.com/WinRb/rubyntlm/pull/51
+* Add dependency to `base64` gem by @yahonda in https://github.com/WinRb/rubyntlm/pull/62
+* Avoid usage of legacy algorithms on libssl-3.0+ by @larskanis in https://github.com/WinRb/rubyntlm/pull/53
+* Add anonymous authentication support by @zeroSteiner in https://github.com/WinRb/rubyntlm/pull/45
+* Update minimum supported ruby to 2.6. Add support for ruby 3.2 and 3.3
 
 ## [0.6.3](https://github.com/WinRb/rubyntlm/tree/0.6.3) (2021-01-26)
 [Full Changelog](https://github.com/WinRb/rubyntlm/compare/v0.6.2...0.6.3)
