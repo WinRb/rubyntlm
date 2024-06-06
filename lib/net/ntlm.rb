@@ -111,7 +111,8 @@ module Net
         ret
       end
 
-      # Not sure what this is doing
+      # Each byte of a DES key contains seven bits of key material and one odd-parity bit.
+      # The parity bit should be set so that there are an odd number of 1 bits in each byte.
       # @param [String] str String to generate keys for
       # @api private
       def gen_keys(str)
