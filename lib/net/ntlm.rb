@@ -59,6 +59,8 @@ require 'net/ntlm/message/type2'
 require 'net/ntlm/message/type3'
 
 require 'net/ntlm/encode_util'
+require 'net/ntlm/md4'
+require 'net/ntlm/rc4'
 
 require 'net/ntlm/client'
 require 'net/ntlm/channel_binding'
@@ -94,10 +96,10 @@ module Net
         end
       end
 
-      # Conver the value to a 64-Bit Little Endian Int
+      # Convert the value to a 64-bit little-endian integer
       # @param [String] val The string to convert
       def pack_int64le(val)
-          [val & 0x00000000ffffffff, val >> 32].pack("V2")
+        [val & 0x00000000ffffffff, val >> 32].pack("V2")
       end
 
       # Builds an array of strings that are 7 characters long
@@ -111,7 +113,8 @@ module Net
         ret
       end
 
-      # Not sure what this is doing
+      # Each byte of a DES key contains seven bits of key material and one odd-parity bit.
+      # The parity bit should be set so that there are an odd number of 1 bits in each byte.
       # @param [String] str String to generate keys for
       # @api private
       def gen_keys(str)
@@ -124,21 +127,23 @@ module Net
 
       def apply_des(plain, keys)
         keys.map {|k|
-          dec = OpenSSL::Cipher.new("des-cbc").encrypt
+          # Spec requires des-cbc, but openssl 3 does not support single des
+          # by default, so just do triple DES (EDE) with the same key
+          dec = OpenSSL::Cipher.new("des-ede-cbc").encrypt
           dec.padding = 0
-          dec.key = k
+          dec.key = k + k
           dec.update(plain) + dec.final
         }
       end
 
-      # Generates a Lan Manager Hash
+      # Generates a {https://en.wikipedia.org/wiki/LAN_Manager LAN Manager Hash}
       # @param [String] password The password to base the hash on
       def lm_hash(password)
         keys = gen_keys password.upcase.ljust(14, "\0")
         apply_des(LM_MAGIC, keys).join
       end
 
-      # Generate a NTLM Hash
+      # Generate an NTLM Hash
       # @param [String] password The password to base the hash on
       # @option opt :unicode (false) Unicode encode the password
       def ntlm_hash(password, opt = {})
@@ -146,14 +151,14 @@ module Net
         unless opt[:unicode]
           pwd = EncodeUtil.encode_utf16le(pwd)
         end
-        OpenSSL::Digest::MD4.digest pwd
+        Net::NTLM::Md4.digest pwd
       end
 
       # Generate a NTLMv2 Hash
       # @param [String] user The username
       # @param [String] password The password
       # @param [String] target The domain or workstation to authenticate to
-      # @option opt :unicode (false) Unicode encode the domain
+      # @option [Boolean] opt :unicode (false) Unicode encode the domain.
       def ntlmv2_hash(user, password, target, opt={})
         if is_ntlm_hash? password
           decoded_password = EncodeUtil.decode_utf16le(password)

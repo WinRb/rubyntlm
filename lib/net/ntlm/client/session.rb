@@ -26,8 +26,8 @@ module Net
       def authenticate!
         calculate_user_session_key!
         type3_opts = {
-          :lm_response   => lmv2_resp,
-          :ntlm_response => ntlmv2_resp,
+          :lm_response   => is_anonymous? ? "\x00".b : lmv2_resp,
+          :ntlm_response => is_anonymous? ? '' : ntlmv2_resp,
           :domain        => domain,
           :user          => username,
           :workstation   => workstation,
@@ -36,11 +36,8 @@ module Net
         t3 = Message::Type3.create type3_opts
         if negotiate_key_exchange?
           t3.enable(:session_key)
-          rc4 = OpenSSL::Cipher.new("rc4")
-          rc4.encrypt
-          rc4.key = user_session_key
-          sk = rc4.update exported_session_key
-          sk << rc4.final
+          rc4 = Net::NTLM::Rc4.new(user_session_key)
+          sk = rc4.encrypt exported_session_key
           t3.session_key = sk
         end
         t3
@@ -50,7 +47,7 @@ module Net
         @exported_session_key ||=
           begin
             if negotiate_key_exchange?
-              OpenSSL::Cipher.new("rc4").random_key
+              OpenSSL::Random.random_bytes(16)
             else
               user_session_key
             end
@@ -61,8 +58,7 @@ module Net
         seq = sequence
         sig = OpenSSL::HMAC.digest(OpenSSL::Digest::MD5.new, client_sign_key, "#{seq}#{message}")[0..7]
         if negotiate_key_exchange?
-          sig = client_cipher.update sig
-          sig << client_cipher.final
+          sig = client_cipher.encrypt sig
         end
         "#{VERSION_MAGIC}#{sig}#{seq}"
       end
@@ -71,20 +67,21 @@ module Net
         seq = signature[-4..-1]
         sig = OpenSSL::HMAC.digest(OpenSSL::Digest::MD5.new, server_sign_key, "#{seq}#{message}")[0..7]
         if negotiate_key_exchange?
-          sig = server_cipher.update sig
-          sig << server_cipher.final
+          sig = server_cipher.encrypt sig
         end
         "#{VERSION_MAGIC}#{sig}#{seq}" == signature
       end
 
       def seal_message(message)
-        emessage = client_cipher.update(message)
-        emessage + client_cipher.final
+        client_cipher.encrypt(message)
       end
 
       def unseal_message(emessage)
-        message = server_cipher.update(emessage)
-        message + server_cipher.final
+        server_cipher.encrypt(emessage)
+      end
+
+      def is_anonymous?
+        username == '' && password == ''
       end
 
       private
@@ -123,23 +120,11 @@ module Net
       end
 
       def client_cipher
-        @client_cipher ||=
-          begin
-            rc4 = OpenSSL::Cipher.new("rc4")
-            rc4.encrypt
-            rc4.key = client_seal_key
-            rc4
-          end
+        @client_cipher ||= Net::NTLM::Rc4.new(client_seal_key)
       end
 
       def server_cipher
-        @server_cipher ||=
-          begin
-            rc4 = OpenSSL::Cipher.new("rc4")
-            rc4.decrypt
-            rc4.key = server_seal_key
-            rc4
-          end
+        @server_cipher ||= Net::NTLM::Rc4.new(server_seal_key)
       end
 
       def client_challenge
@@ -157,7 +142,8 @@ module Net
       end
 
       def use_oem_strings?
-        challenge_message.has_flag? :OEM
+        # @see https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-nlmp/99d90ff4-957f-4c8a-80e4-5bfe5a9a9832
+        !challenge_message.has_flag?(:UNICODE) && challenge_message.has_flag?(:OEM)
       end
 
       def negotiate_key_exchange?
@@ -193,7 +179,12 @@ module Net
       end
 
       def calculate_user_session_key!
-        @user_session_key = OpenSSL::HMAC.digest(OpenSSL::Digest::MD5.new, ntlmv2_hash, nt_proof_str)
+        if is_anonymous?
+          # see MS-NLMP section 3.4
+          @user_session_key = "\x00".b * 16
+        else
+          @user_session_key = OpenSSL::HMAC.digest(OpenSSL::Digest::MD5.new, ntlmv2_hash, nt_proof_str)
+        end
       end
 
       def lmv2_resp
@@ -231,7 +222,6 @@ module Net
           end
         end
       end
-
     end
   end
 end
