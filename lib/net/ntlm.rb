@@ -127,6 +127,8 @@ module Net
 
       def apply_des(plain, keys)
         keys.map {|k|
+          # Spec requires des-cbc, but openssl 3 does not support single des
+          # by default, so just do triple DES (EDE) with the same key
           dec = OpenSSL::Cipher.new("des-ede-cbc").encrypt
           dec.padding = 0
           dec.key = k + k
