@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.6.3](https://github.com/WinRb/rubyntlm/tree/0.6.4) (2024-06-06)
+[Full Changelog](https://github.com/WinRb/rubyntlm/compare/v0.6.3...0.6.4)
+
 ## [0.6.3](https://github.com/WinRb/rubyntlm/tree/0.6.3) (2021-01-26)
 [Full Changelog](https://github.com/WinRb/rubyntlm/compare/v0.6.2...0.6.3)
 

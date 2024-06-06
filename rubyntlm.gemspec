@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.test_files    = s.files.grep(%r{^(test|spec|features)/})
   s.require_paths = ["lib"]
 
-  s.required_ruby_version = '>= 1.8.7'
+  s.required_ruby_version = '>= 2.6.0'
 
   s.license = 'MIT'
 
@@ -26,4 +26,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec", ">= 2.11"
   s.add_development_dependency "simplecov"
   s.add_dependency "base64"
+
+  s.metadata["rubygems_mfa_required"] = "true"
 end
