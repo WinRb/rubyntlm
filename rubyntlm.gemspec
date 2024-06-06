@@ -13,7 +13,6 @@ Gem::Specification.new do |s|
 
 
   s.files         = `git ls-files`.split($/)
-  s.executables   = s.files.grep(%r{^bin/}) { |f| File.basename(f) }
   s.test_files    = s.files.grep(%r{^(test|spec|features)/})
   s.require_paths = ["lib"]
 
@@ -26,4 +25,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rake"
   s.add_development_dependency "rspec", ">= 2.11"
   s.add_development_dependency "simplecov"
+  s.add_dependency "base64"
 end
