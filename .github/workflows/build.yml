@@ -13,7 +13,10 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-2019]
-        ruby: ['3.0', '3.1', '3.2', '3.3', 'head', 'truffleruby-head']
+        ruby: ['3.0', '3.1', '3.2', '3.3', 'head']
+        include:
+          - os: ubuntu-latest
+            ruby: 'truffleruby'
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
