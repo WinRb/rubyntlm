@@ -1,5 +1,9 @@
 # Change Log
 
+## Unreleased
+
+* Fix NTLMv2 hash when username contains non-ASCII characters by @cdelafuente-r7 in https://github.com/WinRb/rubyntlm/pull/56
+
 ## 0.6.4 (2024-06-06)
 
 * Fix applying DES-CBC when using OpenSSL 3 by @paulvt in https://github.com/WinRb/rubyntlm/pull/51
