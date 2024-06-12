@@ -26,7 +26,7 @@ module NTLM
       :NEG_VERSION          => 0x02000000,
       :KEY128               => 0x20000000,
       :KEY_EXCHANGE         => 0x40000000,
-      :KEY56                => 0x80000000
+      :KEY56                => 0x80000000,
       # Undocumented flags:
       :MBZ9                 => 0x00000008,
       :NETWARE              => 0x00000100,
