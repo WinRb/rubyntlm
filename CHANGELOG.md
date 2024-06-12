@@ -1,7 +1,8 @@
 # Change Log
 
-## Unreleased
+## 0.6.5 (2024-06-11)
 
+* Update available NegotiateFlags during authentication
 * Fix NTLMv2 hash when username contains non-ASCII characters by @cdelafuente-r7 in https://github.com/WinRb/rubyntlm/pull/56
 
 ## 0.6.4 (2024-06-06)
