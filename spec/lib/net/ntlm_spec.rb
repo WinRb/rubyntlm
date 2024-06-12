@@ -63,7 +63,7 @@ describe Net::NTLM do
     let(:user) { 'юзер' }
 
     it 'should return the correct ntlmv2 hash' do
-      expect(Net::NTLM::ntlmv2_hash(user, passwd, domain)).to eq(["ba3d357a20233dfc432b727537272bab"].pack("H*"))
+      expect(Net::NTLM::ntlmv2_hash(user, passwd, domain, { unicode: true })).to eq(["a0f4b914a37faeaee884b6b04a20faf0"].pack("H*"))
     end
   end
 
