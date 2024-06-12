@@ -59,6 +59,14 @@ describe Net::NTLM do
     end
   end
 
+  context 'when the username contains non-ASCI characters' do
+    let(:user) { 'юзер' }
+
+    it 'should return the correct ntlmv2 hash' do
+      expect(Net::NTLM::ntlmv2_hash(user, passwd, domain, { unicode: true })).to eq(["a0f4b914a37faeaee884b6b04a20faf0"].pack("H*"))
+    end
+  end
+
   it 'should generate an lm_response' do
     expect(Net::NTLM::lm_response(
         {
