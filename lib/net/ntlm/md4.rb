@@ -35,7 +35,7 @@ module NTLM
         end
 
         io = StringIO.new(string)
-        block = ""
+        block = "".dup
 
         while io.read(64, block)
           x = block.unpack("V16")

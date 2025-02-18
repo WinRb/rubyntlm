@@ -17,7 +17,7 @@ module Net
       #   the outer TLS channel
       def initialize(outer_channel)
         @channel = outer_channel
-        @unique_prefix = 'tls-server-end-point'
+        @unique_prefix = 'tls-server-end-point'.dup
         @initiator_addtype = 0
         @initiator_address_length = 0
         @acceptor_addrtype = 0
