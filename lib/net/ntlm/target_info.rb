@@ -26,7 +26,7 @@ module Net
       attr_reader :av_pairs
 
       def to_s
-        result = ''
+        result = ''.b
         av_pairs.each do |k,v|
           result << k
           result << [v.length].pack('S')
