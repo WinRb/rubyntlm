@@ -13,6 +13,8 @@ module NTLM
       require 'stringio'
 
       def self.digest(string)
+        string = string.force_encoding('UTF-8')
+
         # functions
         mask = (1 << 32) - 1
         f = proc {|x, y, z| x & y | x.^(mask) & z}
