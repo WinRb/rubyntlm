@@ -1,4 +1,4 @@
-shared_examples_for 'a fieldset' do |fields|
+RSpec.shared_examples_for 'a fieldset' do |fields|
 
   subject(:fieldset_class) do
     Class.new(described_class)

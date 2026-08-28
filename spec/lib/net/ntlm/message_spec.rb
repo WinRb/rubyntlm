@@ -1,6 +1,4 @@
-require 'spec_helper'
-
-describe Net::NTLM::Message do
+RSpec.describe Net::NTLM::Message do
 
   fields = []
   flags = [

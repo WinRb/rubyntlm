@@ -1,6 +1,4 @@
-require 'spec_helper'
-
-describe Net::NTLM::Client::Session do
+RSpec.describe Net::NTLM::Client::Session do
   let(:t2_challenge) { Net::NTLM::Message.decode64 "TlRMTVNTUAACAAAADAAMADgAAAA1goriAAyk1DmJUnUAAAAAAAAAAFAAUABEAAAABgLwIwAAAA9TAEUAUgBWAEUAUgACAAwAUwBFAFIAVgBFAFIAAQAMAFMARQBSAFYARQBSAAQADABzAGUAcgB2AGUAcgADAAwAcwBlAHIAdgBlAHIABwAIADd7mrNaB9ABAAAAAA==" }
   let(:inst) { Net::NTLM::Client::Session.new(nil, t2_challenge) }
   let(:user_session_key) {["3c4918ff0b33e2603e5d7ceaf34bb7d5"].pack("H*")}

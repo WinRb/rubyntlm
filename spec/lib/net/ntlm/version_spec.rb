@@ -1,7 +1,6 @@
-require 'spec_helper'
 require File.expand_path("#{File.dirname(__FILE__)}/../../../../lib/net/ntlm/version")
 
-describe Net::NTLM::VERSION do
+RSpec.describe Net::NTLM::VERSION do
 
   it 'should contain an integer value for Major Version' do
     expect(Net::NTLM::VERSION::MAJOR).to be_an Integer

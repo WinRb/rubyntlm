@@ -1,6 +1,4 @@
-require 'spec_helper'
-
-describe Net::NTLM::SecurityBuffer do
+RSpec.describe Net::NTLM::SecurityBuffer do
 
   fields = [
       { :name => :length, :class => Net::NTLM::Int16LE, :value => 0, :active => true },

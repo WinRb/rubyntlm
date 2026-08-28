@@ -1,6 +1,4 @@
-require 'spec_helper'
-
-describe Net::NTLM::FieldSet do
+RSpec.describe Net::NTLM::FieldSet do
 
   fields = []
 

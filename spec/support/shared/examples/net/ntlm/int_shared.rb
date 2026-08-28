@@ -1,4 +1,4 @@
-shared_examples_for 'an integer field' do  |values|
+RSpec.shared_examples_for 'an integer field' do  |values|
 
   subject do
     described_class.new({

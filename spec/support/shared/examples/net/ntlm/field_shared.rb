@@ -1,4 +1,4 @@
-shared_examples_for 'a field' do  | value, active|
+RSpec.shared_examples_for 'a field' do  | value, active|
 
   subject do
     described_class.new({

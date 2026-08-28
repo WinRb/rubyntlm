@@ -1,6 +1,4 @@
-require 'spec_helper'
-
-describe Net::NTLM::EncodeUtil do
+RSpec.describe Net::NTLM::EncodeUtil do
 
   context '#encode_utf16le' do
     it 'should convert an ASCII string to UTF' do

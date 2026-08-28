@@ -13,19 +13,16 @@ Gem::Specification.new do |s|
 
 
   s.files         = `git ls-files`.split($/)
-  s.test_files    = s.files.grep(%r{^(test|spec|features)/})
   s.require_paths = ["lib"]
 
   s.required_ruby_version = '>= 3.0.0'
 
   s.license = 'MIT'
 
-  s.add_development_dependency 'github_changelog_generator', '1.14.3'
-  s.add_development_dependency "pry"
-  s.add_development_dependency "rake"
-  s.add_development_dependency "rspec", ">= 2.11"
-  s.add_development_dependency "simplecov"
   s.add_dependency "base64"
 
   s.metadata["rubygems_mfa_required"] = "true"
+  s.metadata["source_code_uri"] = s.homepage
+  s.metadata["changelog_uri"] = "#{s.homepage}/blob/master/CHANGELOG.md"
+  s.metadata["bug_tracker_uri"] = "#{s.homepage}/issues"
 end

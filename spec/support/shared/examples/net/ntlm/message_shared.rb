@@ -1,4 +1,4 @@
-shared_examples_for 'a message' do |flags|
+RSpec.shared_examples_for 'a message' do |flags|
 
   subject(:test_message) do
     unless described_class.names.include?(:flag)
