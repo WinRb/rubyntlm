@@ -1,6 +1,4 @@
-require 'spec_helper'
-
-describe Net::NTLM::Message::Type0 do
+RSpec.describe Net::NTLM::Message::Type0 do
 
   fields = [
       { :name => :sign, :class => Net::NTLM::String, :value => Net::NTLM::SSP_SIGN, :active => true },

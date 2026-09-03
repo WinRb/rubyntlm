@@ -1,6 +1,4 @@
-require 'spec_helper'
-
-describe Net::NTLM::Field do
+RSpec.describe Net::NTLM::Field do
 
   it_behaves_like 'a field', 'Foo', false
 

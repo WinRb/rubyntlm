@@ -1,6 +1,4 @@
-require 'spec_helper'
-
-describe Net::NTLM::Int16LE do
+RSpec.describe Net::NTLM::Int16LE do
 
   int_values = {
     :default     => 15,

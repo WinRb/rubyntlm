@@ -1,6 +1,4 @@
-require 'spec_helper'
-
-describe Net::NTLM::Blob do
+RSpec.describe Net::NTLM::Blob do
 
   fields = [
       { :name => :blob_signature, :class => Net::NTLM::Int32LE, :value => 257, :active => true },

@@ -1,7 +1,6 @@
 # encoding: UTF-8
-require 'spec_helper'
 
-describe Net::NTLM::Message::Type2 do
+RSpec.describe Net::NTLM::Message::Type2 do
 
   fields = [
       { :name => :sign, :class => Net::NTLM::String, :value => Net::NTLM::SSP_SIGN, :active => true },

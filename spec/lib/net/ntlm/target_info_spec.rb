@@ -1,6 +1,4 @@
-require 'spec_helper'
-
-describe Net::NTLM::TargetInfo do
+RSpec.describe Net::NTLM::TargetInfo do
   let(:key1) { Net::NTLM::TargetInfo::MSV_AV_NB_COMPUTER_NAME }
   let(:value1) { 'some data' }
   let(:key2) { Net::NTLM::TargetInfo::MSV_AV_NB_DOMAIN_NAME }

@@ -1,6 +1,4 @@
-require 'spec_helper'
-
-describe Net::NTLM::Int64LE do
+RSpec.describe Net::NTLM::Int64LE do
 
   int_values = {
       :default     => 5294967295,

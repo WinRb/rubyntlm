@@ -1,6 +1,4 @@
-require "spec_helper"
-
-describe Net::NTLM do
+RSpec.describe Net::NTLM do
   let(:passwd) {"SecREt01"}
   let(:user) {"user"}
   let(:domain) {"DOMAIN"}

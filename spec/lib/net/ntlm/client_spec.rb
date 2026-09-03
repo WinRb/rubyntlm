@@ -1,6 +1,4 @@
-require 'spec_helper'
-
-describe Net::NTLM::Client do
+RSpec.describe Net::NTLM::Client do
   let(:inst) { Net::NTLM::Client.new("test", "test01", :workstation => "testhost") }
   let(:user_session_key) {["3c4918ff0b33e2603e5d7ceaf34bb7d5"].pack("H*")}
 

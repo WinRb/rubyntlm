@@ -1,6 +1,4 @@
-require 'spec_helper'
-
-describe Net::NTLM::ChannelBinding do
+RSpec.describe Net::NTLM::ChannelBinding do
   let(:certificates_path) { 'spec/support/certificates' }
   let(:sha_256_path) { File.join(certificates_path, 'sha_256_hash.pem') }
   let(:sha_256_cert) { OpenSSL::X509::Certificate.new(File.read(sha_256_path)) }  
