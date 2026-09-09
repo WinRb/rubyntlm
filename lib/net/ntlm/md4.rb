@@ -23,8 +23,9 @@ module NTLM
         # initial hash
         a, b, c, d = 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476
 
-        bit_len = string.size << 3
-        string += "\x80"
+        string = string.b
+        bit_len = string.bytesize << 3
+        string += "\x80".b
         while (string.size % 64) != 56
           string += "\0"
         end

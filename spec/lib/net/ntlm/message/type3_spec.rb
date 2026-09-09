@@ -97,6 +97,10 @@ RSpec.describe Net::NTLM::Message::Type3 do
         end
       end
 
+      it 'rejects a non-empty password for an empty-password response' do
+        expect(message.password?('test1234', server_challenge)).to be false
+      end
+
       describe '#ntlm_version' do
         let(:ver) { message.ntlm_version }
         it 'should be :ntlmv2' do
@@ -170,6 +174,22 @@ RSpec.describe Net::NTLM::Message::Type3 do
 
     # http://davenport.sourceforge.net/ntlm.html#appendixC9
     context 'NTLMv2 Authentication; NTLM1 Signing and Sealing Using the 40-bit NTLMv2 User Session Key' do
+      let(:server_challenge) { ['0033b02d17275b77'].pack('H*') }
+
+      describe '#password?' do
+        it 'accepts the known fixture password' do
+          expect(message.password?('test1234', server_challenge)).to be true
+        end
+
+        it 'rejects an incorrect password' do
+          expect(message.password?('wrong', server_challenge)).to be false
+        end
+
+        it 'rejects an empty password' do
+          expect(message.blank_password?(server_challenge)).to be false
+        end
+      end
+
       let(:data) do
         [
           '4e544c4d5353500003000000180018006000000076007600780000000c000c00' \
@@ -218,6 +238,57 @@ RSpec.describe Net::NTLM::Message::Type3 do
 
     end
 
+  end
+
+  describe '#password? with serialized NTLMv2 responses' do
+    let(:type2) do
+      Net::NTLM::Message::Type2.new.tap do |message|
+        message.challenge = 0x0123456789abcdef
+      end
+    end
+    let(:server_challenge) { Net::NTLM.pack_int64le(type2.challenge) }
+    subject(:message) do
+      described_class.parse(type2.response(
+        { :user => 'victim', :domain => 'CORP', :password => password },
+        { :ntlmv2 => true, :client_challenge => 0x1122334455667788, :timestamp => 0 }
+      ).serialize)
+    end
+
+    ['secret', 'odd', "p\u00e4ss\u5bc6\u7801\u{1f512}", ''].each do |password|
+      context "with password #{password.inspect}" do
+        let(:password) { password }
+
+        it 'accepts the password used to generate the response' do
+          expect(message.password?(password, server_challenge)).to be true
+        end
+
+        it 'rejects a different non-empty password' do
+          expect(message.password?('incorrect', server_challenge)).to be false
+        end
+
+        it 'recognizes only an empty password as blank' do
+          expect(message.blank_password?(server_challenge)).to eq(password.empty?)
+        end
+
+        it 'rejects a different server challenge' do
+          expect(message.password?(password, "\x00" * 8)).to be false
+        end
+
+        it 'accepts an integer server challenge' do
+          expect(message.password?(password, type2.challenge)).to be true
+        end
+
+        it 'rejects a modified proof' do
+          message.ntlm_response.setbyte(0, message.ntlm_response.getbyte(0) ^ 1)
+          expect(message.password?(password, server_challenge)).to be false
+        end
+
+        it 'rejects a modified blob' do
+          message.ntlm_response.setbyte(24, message.ntlm_response.getbyte(24) ^ 1)
+          expect(message.password?(password, server_challenge)).to be false
+        end
+      end
+    end
   end
 
   describe '#serialize' do

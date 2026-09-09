@@ -101,29 +101,17 @@ module Net
         end
 
         def ntlmv2_password?(password, server_challenge)
+          # user and domain are already UTF-16LE from the wire; encode the
+          # supplied password to match before deriving the verification key.
+          key = NTLM.ntlmv2_hash(user, EncodeUtil.encode_utf16le(password), domain, :unicode => true)
+          server_challenge = NTLM.pack_int64le(server_challenge) if server_challenge.is_a?(Integer)
 
-          # The first 16 bytes of the ntlm_response are the HMAC of the blob
-          # that follows it.
-          blob = Blob.new
-          blob.parse(ntlm_response[16..-1])
-
-          empty_hash = NTLM.ntlmv2_response(
-            {
-              # user and domain came from the serialized data here, so
-              # they're already unicode
-              :ntlmv2_hash => NTLM.ntlmv2_hash(user, '', domain, :unicode => true),
-              :challenge => server_challenge,
-              :target_info => blob.target_info
-            },
-            {
-              :client_challenge => blob.challenge,
-              # The blob's timestamp is already in milliseconds since 1601,
-              # so convert it back to epoch time first
-              :timestamp => (blob.timestamp / 10_000_000) - NTLM::TIME_OFFSET,
-            }
+          # Authenticate the exact blob bytes. Rebuilding the blob truncates
+          # sub-second timestamps and rejects otherwise valid responses.
+          expected_proof = OpenSSL::HMAC.digest(
+            OpenSSL::Digest::MD5.new, key, server_challenge + ntlm_response[16..-1]
           )
-
-          empty_hash == ntlm_response
+          expected_proof == ntlm_response[0,16]
         end
       end
     end
