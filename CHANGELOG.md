@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.6.6 (2026-09-09)
+
+* Security: fix NTLMv2 authentication bypass in `Type3#password?`, which verified NTLMv2 responses against an empty password instead of the supplied one
+* Fix binary padding in the Ruby MD4 fallback so non-ASCII passwords hash correctly under OpenSSL 3
+
 ## 0.6.5 (2024-06-11)
 
 * Update available NegotiateFlags during authentication
