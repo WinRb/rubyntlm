@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.homepage = 'https://github.com/winrb/rubyntlm'
 
 
-  s.files         = `git ls-files`.split($/)
+  s.files         = `git ls-files lib`.split($/) + ["CHANGELOG.md", "LICENSE", "README.md"]
   s.require_paths = ["lib"]
 
   s.required_ruby_version = '>= 3.0.0'
