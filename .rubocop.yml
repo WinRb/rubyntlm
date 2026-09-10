@@ -6,11 +6,20 @@ AllCops:
   TargetRubyVersion: 3.0
   SuggestExtensions: true
   # Example scripts are illustrative, not library code; skip them.
+  # vendor/ holds CI's vendored bundle. Defining Exclude replaces RuboCop's
+  # defaults (which skip vendor/), so it must be restated here.
   Exclude:
     - 'examples/**/*'
+    - 'vendor/**/*'
 
 Gemspec/RequireMFA:
   Enabled: true
+
+# The gem intentionally supports a range of rubies (>= 3.0.0) while lint
+# targets the oldest supported version, so the floor must not be raised
+# to match TargetRubyVersion.
+Gemspec/RequiredRubyVersion:
+  Enabled: false
 
 Layout/FirstHashElementIndentation:
   EnforcedStyle: consistent
