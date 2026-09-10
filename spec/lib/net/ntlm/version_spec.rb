@@ -1,26 +1,28 @@
+# frozen_string_literal: true
+
 require File.expand_path("#{File.dirname(__FILE__)}/../../../../lib/net/ntlm/version")
 
 RSpec.describe Net::NTLM::VERSION do
-
-  it 'should contain an integer value for Major Version' do
-    expect(Net::NTLM::VERSION::MAJOR).to be_an Integer
+  let(:expected_string) do
+    [described_class::MAJOR, described_class::MINOR, described_class::TINY].join('.')
   end
 
-  it 'should contain an integer value for Minor Version' do
-    expect(Net::NTLM::VERSION::MINOR).to be_an Integer
+  it 'contains an integer value for Major Version' do
+    expect(described_class::MAJOR).to be_an Integer
   end
 
-  it 'should contain an integer value for Patch Version' do
-    expect(Net::NTLM::VERSION::TINY).to be_an Integer
+  it 'contains an integer value for Minor Version' do
+    expect(described_class::MINOR).to be_an Integer
   end
 
-  it 'should contain an aggregate version string' do
-    string = [
-        Net::NTLM::VERSION::MAJOR,
-        Net::NTLM::VERSION::MINOR,
-        Net::NTLM::VERSION::TINY
-    ].join('.')
-    expect(Net::NTLM::VERSION::STRING).to be_a String
-    expect(Net::NTLM::VERSION::STRING).to eq(string)
+  it 'contains an integer value for Patch Version' do
+    expect(described_class::TINY).to be_an Integer
+  end
+
+  it 'contains an aggregate version string' do
+    aggregate_failures do
+      expect(described_class::STRING).to be_a String
+      expect(described_class::STRING).to eq(expected_string)
+    end
   end
 end

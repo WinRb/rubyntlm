@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Coverage must be started before the library under test is loaded, otherwise
 # methods defined at require time are not tracked.
 if ENV['COVERAGE']
@@ -14,7 +16,7 @@ require 'rspec'
 require 'net/ntlm'
 
 # Custom matchers, shared examples and other support code.
-Dir[File.expand_path('support/**/*.rb', __dir__)].sort.each { |path| require path }
+Dir[File.expand_path('support/**/*.rb', __dir__)].sort.each do |path| require path end
 
 RSpec.configure do |config|
   # Require `RSpec.describe` rather than a top-level `describe`, so the gem's

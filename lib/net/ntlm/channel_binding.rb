@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Net
   module NTLM
+    # Channel binding data used for the MsvAvChannelBindings AV_PAIR.
     class ChannelBinding
-
       # Creates a ChannelBinding used for Extended Protection Authentication
       # @see http://blogs.msdn.com/b/openspecification/archive/2013/03/26/ntlm-and-channel-binding-hash-aka-exteneded-protection-for-authentication.aspx
       #
@@ -24,9 +26,8 @@ module Net
         @acceptor_address_length = 0
       end
 
-      attr_reader :channel, :unique_prefix, :initiator_addtype
-      attr_reader :initiator_address_length, :acceptor_addrtype
-      attr_reader :acceptor_address_length
+      attr_reader :channel, :unique_prefix, :initiator_addtype, :initiator_address_length, :acceptor_addrtype,
+                  :acceptor_address_length
 
       # Returns a channel binding hash acceptable for use as a AV_PAIR MsvAvChannelBindings
       #   field value as specified in the NTLM protocol
@@ -38,10 +39,7 @@ module Net
 
       def gss_channel_bindings_struct
         @gss_channel_bindings_struct ||= begin
-          token = [initiator_addtype].pack('I')
-          token << [initiator_address_length].pack('I')
-          token << [acceptor_addrtype].pack('I')
-          token << [acceptor_address_length].pack('I')
+          token = pack_address_header
           token << [application_data.length].pack('I')
           token << application_data
           token
@@ -54,11 +52,17 @@ module Net
 
       def application_data
         @application_data ||= begin
-          data = unique_prefix
+          data = +unique_prefix
           data << ':'
           data << channel_hash.digest
           data
         end
+      end
+
+      private
+
+      def pack_address_header
+        [initiator_addtype, initiator_address_length, acceptor_addrtype, acceptor_address_length].pack('I4')
       end
     end
   end

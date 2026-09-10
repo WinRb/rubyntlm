@@ -54,9 +54,6 @@ jobs:
           advanced-security: false # fail the build on findings instead of uploading SARIF
 
   lint:
-    # Advisory-only on this first pass: RuboCop findings are reported for a
-    # later dedicated cleanup, not fixed here.
-    continue-on-error: true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

@@ -1,25 +1,24 @@
-RSpec.shared_examples_for 'a field' do  | value, active|
+# frozen_string_literal: true
 
+RSpec.shared_examples_for 'a field' do |value, active|
   subject do
     described_class.new({
-        :value  => value,
-        :active => active
+      value: value,
+      active: active
     })
   end
 
-  it { should respond_to :active }
-  it { should respond_to :value }
-  it { should respond_to :size }
-  it { should respond_to :parse }
-  it { should respond_to :serialize }
+  it { is_expected.to respond_to :active }
+  it { is_expected.to respond_to :value }
+  it { is_expected.to respond_to :size }
+  it { is_expected.to respond_to :parse }
+  it { is_expected.to respond_to :serialize }
 
-
-  it 'should set the value from initialize options' do
+  it 'sets the value from initialize options' do
     expect(subject.value).to eq(value)
   end
 
-  it 'should set active from initialize options' do
+  it 'sets active from initialize options' do
     expect(subject.active).to eq(active)
   end
-
 end
