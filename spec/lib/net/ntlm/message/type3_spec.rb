@@ -1,15 +1,16 @@
-RSpec.describe Net::NTLM::Message::Type3 do
+# frozen_string_literal: true
 
+RSpec.describe Net::NTLM::Message::Type3 do
   fields = [
-      { :name => :sign, :class => Net::NTLM::String, :value => Net::NTLM::SSP_SIGN, :active => true },
-      { :name => :type, :class => Net::NTLM::Int32LE, :value => 3, :active => true },
-      { :name => :lm_response, :class => Net::NTLM::SecurityBuffer, :value => '', :active => true },
-      { :name => :ntlm_response, :class => Net::NTLM::SecurityBuffer, :value =>  '', :active => true },
-      { :name => :domain, :class => Net::NTLM::SecurityBuffer, :value =>  '', :active => true },
-      { :name => :user, :class => Net::NTLM::SecurityBuffer, :value =>  '', :active => true },
-      { :name => :workstation, :class => Net::NTLM::SecurityBuffer, :value =>  '', :active => true },
-      { :name => :session_key, :class => Net::NTLM::SecurityBuffer, :value =>  '', :active => false },
-      { :name => :flag, :class => Net::NTLM::Int32LE, :value =>  0, :active => false },
+    { name: :sign, class: Net::NTLM::String, value: Net::NTLM::SSP_SIGN, active: true },
+    { name: :type, class: Net::NTLM::Int32LE, value: 3, active: true },
+    { name: :lm_response, class: Net::NTLM::SecurityBuffer, value: '', active: true },
+    { name: :ntlm_response, class: Net::NTLM::SecurityBuffer, value: '', active: true },
+    { name: :domain, class: Net::NTLM::SecurityBuffer, value: '', active: true },
+    { name: :user, class: Net::NTLM::SecurityBuffer, value: '', active: true },
+    { name: :workstation, class: Net::NTLM::SecurityBuffer, value: '', active: true },
+    { name: :session_key, class: Net::NTLM::SecurityBuffer, value: '', active: false },
+    { name: :flag, class: Net::NTLM::Int32LE, value: 0, active: false }
   ]
   flags = []
   it_behaves_like 'a fieldset', fields
@@ -40,19 +41,8 @@ RSpec.describe Net::NTLM::Message::Type3 do
       end
 
       let(:server_challenge) { ['f588469dc96fe809'].pack('H*') }
-
-      it 'should set the magic' do
-        expect(message.sign).to eql(Net::NTLM::SSP_SIGN)
-      end
-      it 'should set the type' do
-        expect(message.type).to eq(3)
-      end
-      it 'should set the LM response' do
-        lm_response = ['ced203d860b80c7350050754b238202a8c1c63134f0ae0f0'].pack('H*')
-        expect(message.lm_response).to eq(lm_response)
-      end
-      it 'should set the NTLM response' do
-        ntlm_response = [
+      let(:expected_ntlm_response) do
+        [
           '86a3fb147e8b2f9fde3ef1b1b43c83dc010100000000000080512dba020ed001' \
           '1c5bc2c8339fd29a0000000002001e00570049004e002d00420035004a004e00' \
           '330052004800470046003300310001001e00570049004e002d00420035004a00' \
@@ -61,58 +51,72 @@ RSpec.describe Net::NTLM::Message::Type3 do
           '35004a004e00330052004800470046003300310007000800a209e5ba020ed001' \
           '00000000'
         ].pack('H*')
-        expect(message.ntlm_response).to eq(ntlm_response)
       end
-      it 'should set the user' do
+
+      it 'sets the magic' do
+        expect(message.sign).to eql(Net::NTLM::SSP_SIGN)
+      end
+
+      it 'sets the type' do
+        expect(message.type).to eq(3)
+      end
+
+      it 'sets the LM response' do
+        lm_response = ['ced203d860b80c7350050754b238202a8c1c63134f0ae0f0'].pack('H*')
+        expect(message.lm_response).to eq(lm_response)
+      end
+
+      it 'sets the NTLM response' do
+        expect(message.ntlm_response).to eq(expected_ntlm_response)
+      end
+
+      it 'sets the user' do
         # administrator
         user = ['610064006d0069006e006900730074007200610074006f007200'].pack('H*')
         expect(message.user).to eq(user)
       end
-      it 'should set the domain' do
+
+      it 'sets the domain' do
         # WORKGROUP
         domain = ['57004f0052004b00470052004f0055005000'].pack('H*')
         expect(message.domain).to eq(domain)
       end
-      it 'should set the workstation' do
+
+      it 'sets the workstation' do
         # AUS-LEET-1031
         workstation = ['4100550053002d004c004500450054002d003100300033003100'].pack('H*')
         expect(message.workstation).to eq(workstation)
       end
-      it 'should set the session key' do
+
+      it 'sets the session key' do
         session_key = ['7036615cd6d9b19a685ded4312311cd7'].pack('H*')
         expect(message.session_key).to eq(session_key)
       end
 
-      it 'should set the flags' do
+      it 'sets the flags' do
         expect(message.flag).to eq(0x60088215)
       end
 
-      it 'should NOT set the OS version structure' do
+      it 'does not set the OS version structure' do
         expect(message.os_version).to be_nil
       end
 
-      describe '#blank_password?' do
-        it 'should be true' do
-          expect(message.blank_password?(server_challenge)).to be true
-        end
+      it '#blank_password? is true' do
+        expect(message.blank_password?(server_challenge)).to be true
       end
 
       it 'rejects a non-empty password for an empty-password response' do
         expect(message.password?('test1234', server_challenge)).to be false
       end
 
-      describe '#ntlm_version' do
-        let(:ver) { message.ntlm_version }
-        it 'should be :ntlmv2' do
-          expect(ver).to eq(:ntlmv2)
-        end
+      it '#ntlm_version is :ntlmv2' do
+        expect(message.ntlm_version).to eq(:ntlmv2)
       end
-
     end
 
     # http://davenport.sourceforge.net/ntlm.html#appendixC7
-    context 'NTLM2 Session Response Authentication; NTLM2 Signing and Sealing Using the 128-bit NTLM2 Session Response User Session Key With Key Exchange Negotiated' do
-
+    context 'NTLM2 Session Response Authentication; NTLM2 Signing and Sealing Using the 128-bit NTLM2 Session Re' \
+        'sponse User Session Key With Key Exchange Negotiated' do
       let(:data) do
         [
           '4e544c4d5353500003000000180018006000000018001800780000000c000c00' \
@@ -123,71 +127,64 @@ RSpec.describe Net::NTLM::Message::Type3 do
         ].pack('H*')
       end
 
-      it 'should set the LM response' do
+      let(:server_challenge) { ['677f1c557a5ee96c'].pack('H*') }
+
+      it 'sets the LM response' do
         lm_response = ['404d1b6f6915258000000000000000000000000000000000'].pack('H*')
         expect(message.lm_response).to eq(lm_response)
       end
-      it 'should set the NTLM response' do
-        ntlm_response = [ 'ea8cc49f24da157f13436637f77693d8b992d619e584c7ee' ].pack('H*')
+
+      it 'sets the NTLM response' do
+        ntlm_response = ['ea8cc49f24da157f13436637f77693d8b992d619e584c7ee'].pack('H*')
         expect(message.ntlm_response).to eq(ntlm_response)
       end
-      it 'should set the domain' do
+
+      it 'sets the domain' do
         # TESTNT
         domain = ['54004500530054004e005400'].pack('H*')
         expect(message.domain).to eq(domain)
       end
-      it 'should set the user' do
+
+      it 'sets the user' do
         # test
         user = ['7400650073007400'].pack('H*')
         expect(message.user).to eq(user)
       end
-      it 'should set the workstation' do
+
+      it 'sets the workstation' do
         # MEMBER
         workstation = ['4d0045004d00420045005200'].pack('H*')
         expect(message.workstation).to eq(workstation)
       end
-      it 'should set the session key' do
+
+      it 'sets the session key' do
         session_key = ['727a5240822ec7af4e9100c43e6fee7f'].pack('H*')
         expect(message.session_key).to eq(session_key)
       end
 
-      let(:server_challenge) { ['677f1c557a5ee96c'].pack('H*') }
-      describe '#password?' do
-        it 'should be true for "test1234"' do
-          expect(message.password?('test1234', server_challenge)).to be true
-        end
-      end
-      describe '#blank_password?' do
-        it 'should be false' do
-          expect(message.blank_password?(server_challenge)).to be false
-        end
+      it '#password? is true for "test1234"' do
+        expect(message.password?('test1234', server_challenge)).to be true
       end
 
-      describe '#ntlm_version' do
-        let(:ver) { message.ntlm_version }
-        it 'should be :ntlm2_session' do
-          expect(ver).to eq(:ntlm2_session)
-        end
+      it '#blank_password? is false' do
+        expect(message.blank_password?(server_challenge)).to be false
       end
 
+      it '#ntlm_version is :ntlm2_session' do
+        expect(message.ntlm_version).to eq(:ntlm2_session)
+      end
     end
 
     # http://davenport.sourceforge.net/ntlm.html#appendixC9
     context 'NTLMv2 Authentication; NTLM1 Signing and Sealing Using the 40-bit NTLMv2 User Session Key' do
       let(:server_challenge) { ['0033b02d17275b77'].pack('H*') }
-
-      describe '#password?' do
-        it 'accepts the known fixture password' do
-          expect(message.password?('test1234', server_challenge)).to be true
-        end
-
-        it 'rejects an incorrect password' do
-          expect(message.password?('wrong', server_challenge)).to be false
-        end
-
-        it 'rejects an empty password' do
-          expect(message.blank_password?(server_challenge)).to be false
-        end
+      let(:expected_ntlm_response) do
+        [
+          'f77c67dad00b93216242b197fe6addfa0101000000000000502db638677bc301' \
+          'f2e6329726c598e80000000002000c0054004500530054004e00540001000c00' \
+          '4d0045004d0042004500520003001e006d0065006d006200650072002e007400' \
+          '6500730074002e0063006f006d000000000000000000'
+        ].pack 'H*'
       end
 
       let(:data) do
@@ -203,56 +200,60 @@ RSpec.describe Net::NTLM::Message::Type3 do
         ].pack 'H*'
       end
 
-      it 'should set the NTLM response' do
-        ntlm_response = [
-          'f77c67dad00b93216242b197fe6addfa0101000000000000502db638677bc301' \
-          'f2e6329726c598e80000000002000c0054004500530054004e00540001000c00' \
-          '4d0045004d0042004500520003001e006d0065006d006200650072002e007400' \
-          '6500730074002e0063006f006d000000000000000000'
-        ].pack 'H*'
-        expect(message.ntlm_response).to eq(ntlm_response)
+      it '#password? accepts the known fixture password' do
+        expect(message.password?('test1234', server_challenge)).to be true
       end
 
-      it 'should set the domain' do
+      it '#password? rejects an incorrect password' do
+        expect(message.password?('wrong', server_challenge)).to be false
+      end
+
+      it '#blank_password? rejects an empty password' do
+        expect(message.blank_password?(server_challenge)).to be false
+      end
+
+      it 'sets the NTLM response' do
+        expect(message.ntlm_response).to eq(expected_ntlm_response)
+      end
+
+      it 'sets the domain' do
         # TESTNT
         domain = ['54004500530054004e005400'].pack('H*')
         expect(message.domain).to eq(domain)
       end
-      it 'should set the user' do
+
+      it 'sets the user' do
         # test
         user = ['7400650073007400'].pack('H*')
         expect(message.user).to eq(user)
       end
-      it 'should set the workstation' do
+
+      it 'sets the workstation' do
         # MEMBER
         workstation = ['4d0045004d00420045005200'].pack('H*')
         expect(message.workstation).to eq(workstation)
       end
 
-      describe '#ntlm_version' do
-        let(:ver) { message.ntlm_version }
-        it 'should be :ntlmv2' do
-          expect(ver).to eq(:ntlmv2)
-        end
+      it '#ntlm_version is :ntlmv2' do
+        expect(message.ntlm_version).to eq(:ntlmv2)
       end
-
     end
-
   end
 
   describe '#password? with serialized NTLMv2 responses' do
+    subject(:message) do
+      described_class.parse(type2.response(
+        { user: 'victim', domain: 'CORP', password: password },
+        { ntlmv2: true, client_challenge: 0x1122334455667788, timestamp: 0 }
+      ).serialize)
+    end
+
     let(:type2) do
       Net::NTLM::Message::Type2.new.tap do |message|
         message.challenge = 0x0123456789abcdef
       end
     end
     let(:server_challenge) { Net::NTLM.pack_int64le(type2.challenge) }
-    subject(:message) do
-      described_class.parse(type2.response(
-        { :user => 'victim', :domain => 'CORP', :password => password },
-        { :ntlmv2 => true, :client_challenge => 0x1122334455667788, :timestamp => 0 }
-      ).serialize)
-    end
 
     ['secret', 'odd', "p\u00e4ss\u5bc6\u7801\u{1f512}", ''].each do |password|
       context "with password #{password.inspect}" do
@@ -292,18 +293,20 @@ RSpec.describe Net::NTLM::Message::Type3 do
   end
 
   describe '#serialize' do
+    subject(:message) { described_class.create(opts) }
+
     context 'when the username contains non-ASCI characters' do
       let(:t3) {
         t2 = Net::NTLM::Message::Type2.new
         t2.response(
           {
-            :user => 'Hélène',
-            :password => '123456',
-            :domain => ''
+            user: 'Hélène',
+            password: '123456',
+            domain: ''
           },
           {
-            :ntlmv2 => true,
-            :workstation => 'testlab.local'
+            ntlmv2: true,
+            workstation: 'testlab.local'
           }
         )
       }
@@ -313,21 +316,23 @@ RSpec.describe Net::NTLM::Message::Type3 do
       end
     end
 
-    subject(:message) { described_class.create(opts) }
     context 'with the UNICODE flag set' do
-      let(:opts) { {lm_response: "\x00".b, ntlm_response: '', domain: '', workstation: '', user: '', flag: Net::NTLM::DEFAULT_FLAGS[:TYPE3] | Net::NTLM::FLAGS[:UNICODE] } }
+      let(:opts) {
+        { lm_response: "\x00".b, ntlm_response: '', domain: '', workstation: '', user: '',
+       flag: Net::NTLM::DEFAULT_FLAGS[:TYPE3] | Net::NTLM::FLAGS[:UNICODE] }
+      }
 
-      it 'should pad the domain field to a multiple of 2' do
+      it 'pads the domain field to a multiple of 2' do
         message.serialize
         expect(message[:domain][:offset].value % 2).to eq 0
       end
 
-      it 'should pad the user field to a multiple of 2' do
+      it 'pads the user field to a multiple of 2' do
         message.serialize
         expect(message[:user][:offset].value % 2).to eq 0
       end
 
-      it 'should pad the workstation field to a multiple of 2' do
+      it 'pads the workstation field to a multiple of 2' do
         message.serialize
         expect(message[:workstation][:offset].value % 2).to eq 0
       end

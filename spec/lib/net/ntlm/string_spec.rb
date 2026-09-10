@@ -1,70 +1,78 @@
+# frozen_string_literal: true
+
 RSpec.describe Net::NTLM::String do
+  let(:inactive) {
+    described_class.new({
+      value: 'Test',
+      active: false,
+      size: 4
+    })
+  }
+  let(:active) {
+    described_class.new({
+      value: 'Test',
+      active: true,
+      size: 4
+    })
+  }
 
   it_behaves_like 'a field', 'Foo', false
 
-  let(:active) {
-    Net::NTLM::String.new({
-        :value  => 'Test',
-        :active => true,
-        :size   => 4
-    })
-  }
-
-  let(:inactive) {
-    Net::NTLM::String.new({
-        :value  => 'Test',
-        :active => false,
-        :size   => 4
-    })
-  }
-
-  context '#serialize' do
-    it 'should return the value when active' do
+  describe '#serialize' do
+    it 'returns the value when active' do
       expect(active.serialize).to eq('Test')
     end
 
-    it 'should return an empty string when inactive' do
+    it 'returns an empty string when inactive' do
       expect(inactive.serialize).to eq('')
     end
 
-    it 'should coerce non-string values into strings' do
+    it 'coerces non-string values into strings' do
       active.value = 15
       expect(active.serialize).to eq('15')
     end
 
-    it 'should return empty string on a nil' do
+    it 'returns empty string on a nil' do
       active.value = nil
       expect(active.serialize).to eq('')
     end
   end
 
-  context '#value=' do
-    it 'should set active to false if it empty' do
+  describe '#value=' do
+    it 'sets active to false if it empty' do
       active.value = ''
-      expect(active.active).to eq(false)
+      expect(active.active).to be(false)
     end
 
-    it 'should adjust the size based on the value set' do
-      expect(active.size).to eq(4)
-      active.value = 'Foobar'
-      expect(active.size).to eq(6)
+    it 'adjusts the size based on the value set' do
+      aggregate_failures do
+        expect(active.size).to eq(4)
+        active.value = 'Foobar'
+        expect(active.size).to eq(6)
+      end
     end
   end
 
-  context '#parse' do
-    it 'should read in a string of the proper size' do
-      expect(active.parse('tseT')).to eq(4)
-      expect(active.value).to eq('tseT')
+  describe '#parse' do
+    it 'reads in a string of the proper size' do
+      aggregate_failures do
+        expect(active.parse('tseT')).to eq(4)
+        expect(active.value).to eq('tseT')
+      end
     end
 
-    it 'should not read in a string that is too small' do
-      expect(active.parse('B')).to eq(0)
-      expect(active.value).to eq('Test')
+    it 'does not read in a string that is too small' do
+      aggregate_failures do
+        expect(active.parse('B')).to eq(0)
+        expect(active.value).to eq('Test')
+      end
     end
 
-    it 'should be able to read from an offset and only for the given size' do
-      expect(active.parse('FooBarBaz',3)).to eq(4)
-      expect(active.value).to eq('BarB')
+    it 'is able to read from an offset and only for the given size' do
+      aggregate_failures do
+        expect(active.parse('FooBarBaz', 3)).to eq(4)
+        expect(active.value).to eq('BarB')
+      end
     end
   end
 end

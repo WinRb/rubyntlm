@@ -1,25 +1,26 @@
+# frozen_string_literal: true
 
 module Net
   module NTLM
-
+    # NTLMSSP security buffer: length/allocated/offset triplet plus payload.
     class SecurityBuffer < FieldSet
-
-      int16LE   :length,        {:value => 0}
-      int16LE   :allocated,     {:value => 0}
-      int32LE   :offset,        {:value => 0}
+      int16_le   :length,        { value: 0 }
+      int16_le   :allocated,     { value: 0 }
+      int32_le   :offset,        { value: 0 }
 
       attr_accessor :active
-      def initialize(opts={})
+
+      def initialize(opts = {})
         super()
         @value  = opts[:value]
-        @active = opts[:active].nil? ? true : opts[:active]
+        @active = opts[:active].nil? || opts[:active]
         @size = 8
       end
 
-      def parse(str, offset=0)
-        if @active and str.size >= offset + @size
+      def parse(str, offset = 0)
+        if @active && str.size >= offset + @size
           super(str, offset)
-          @value = str[self.offset, self.length]
+          @value = str[self.offset, length]
           @size
         else
           0
@@ -30,9 +31,7 @@ module Net
         super if @active
       end
 
-      def value
-        @value
-      end
+      attr_reader :value
 
       def value=(val)
         @value = val
@@ -43,6 +42,5 @@ module Net
         @active ? @value.size : 0
       end
     end
-
   end
 end

@@ -1,4 +1,5 @@
-# encoding: UTF-8
+# frozen_string_literal: true
+
 #
 # = net/ntlm.rb
 #
@@ -61,21 +62,20 @@ require 'net/ntlm/message/type3'
 require 'net/ntlm/encode_util'
 require 'net/ntlm/md4'
 require 'net/ntlm/rc4'
+require 'net/ntlm/response'
 
 require 'net/ntlm/client'
 require 'net/ntlm/channel_binding'
 require 'net/ntlm/target_info'
 
 module Net
+  # Ruby/NTLM library: message creator and parser for NTLM authentication.
   module NTLM
-
     LM_MAGIC = "KGS!@\#$%"
-    TIME_OFFSET = 11644473600
+    TIME_OFFSET = 11_644_473_600
     MAX64 = 0xffffffffffffffff
 
-
     class << self
-
       # Valid format for LAN Manager hex digest portion: 32 hexadecimal characters.
       LAN_MANAGER_HEX_DIGEST_REGEXP = /[0-9a-f]{32}/i
       # Valid format for NT LAN Manager hex digest portion: 32 hexadecimal characters.
@@ -86,7 +86,7 @@ module Net
       # Takes a string and determines whether it is a valid NTLM Hash
       # @param [String] the string to validate
       # @return [Boolean] whether or not the string is a valid NTLM hash
-      def is_ntlm_hash?(data)
+      def ntlm_hash?(data)
         decoded_data = data.dup
         decoded_data = EncodeUtil.decode_utf16le(decoded_data)
         if DATA_REGEXP.match(decoded_data)
@@ -96,10 +96,12 @@ module Net
         end
       end
 
+      alias is_ntlm_hash? ntlm_hash?
+
       # Convert the value to a 64-bit little-endian integer
       # @param [String] val The string to convert
       def pack_int64le(val)
-        [val & 0x00000000ffffffff, val >> 32].pack("V2")
+        [val & 0x00000000ffffffff, val >> 32].pack('V2')
       end
 
       # Builds an array of strings that are 7 characters long
@@ -107,9 +109,7 @@ module Net
       # @api private
       def split7(str)
         s = str.dup
-        until s.empty?
-          (ret ||= []).push s.slice!(0, 7)
-        end
+        (ret ||= []).push s.slice!(0, 7) until s.empty?
         ret
       end
 
@@ -118,18 +118,18 @@ module Net
       # @param [String] str String to generate keys for
       # @api private
       def gen_keys(str)
-        split7(str).map{ |str7|
-          bits = split7(str7.unpack("B*")[0]).inject('')\
-            {|ret, tkn| ret += tkn + (tkn.gsub('1', '').size % 2).to_s }
-          [bits].pack("B*")
+        split7(str).map { |str7|
+          bits = split7(str7.unpack1('B*')).inject('')\
+            { |ret, tkn| ret + tkn + (tkn.gsub('1', '').size % 2).to_s }
+          [bits].pack('B*')
         }
       end
 
       def apply_des(plain, keys)
-        keys.map {|k|
+        keys.map { |k|
           # Spec requires des-cbc, but openssl 3 does not support single des
           # by default, so just do triple DES (EDE) with the same key
-          dec = OpenSSL::Cipher.new("des-ede-cbc").encrypt
+          dec = OpenSSL::Cipher.new('des-ede-cbc').encrypt
           dec.padding = 0
           dec.key = k + k
           dec.update(plain) + dec.final
@@ -148,9 +148,7 @@ module Net
       # @option opt :unicode (false) Unicode encode the password
       def ntlm_hash(password, opt = {})
         pwd = password.dup
-        unless opt[:unicode]
-          pwd = EncodeUtil.encode_utf16le(pwd)
-        end
+        pwd = EncodeUtil.encode_utf16le(pwd) unless opt[:unicode]
         Net::NTLM::Md4.digest pwd
       end
 
@@ -159,124 +157,38 @@ module Net
       # @param [String] password The password
       # @param [String] target The domain or workstation to authenticate to
       # @option [Boolean] opt :unicode (false) Unicode encode the domain.
-      def ntlmv2_hash(user, password, target, opt={})
-        if is_ntlm_hash? password
-          decoded_password = EncodeUtil.decode_utf16le(password)
-          ntlmhash = [decoded_password.upcase[33,65]].pack('H32')
-        else
-          ntlmhash = ntlm_hash(password, opt)
-        end
+      def ntlmv2_hash(user, password, target, opt = {})
+        ntlmhash = ntlmv2_key(password, opt)
+        userdomain = ntlmv2_userdomain(user, target, opt)
+        OpenSSL::HMAC.digest(OpenSSL::Digest.new('MD5'), ntlmhash, userdomain)
+      end
 
+      private
+
+      def ntlmv2_key(password, opt)
+        if ntlm_hash? password
+          decoded = EncodeUtil.decode_utf16le(password)
+          [decoded.upcase[33, 65]].pack('H32')
+        else
+          ntlm_hash(password, opt)
+        end
+      end
+
+      def ntlmv2_userdomain(user, target, opt)
+        userdomain = ntlmv2_upcase_user(user, opt) + target
+        opt[:unicode] ? userdomain : EncodeUtil.encode_utf16le(userdomain)
+      end
+
+      def ntlmv2_upcase_user(user, opt)
         if opt[:unicode]
           # Uppercase operation on username containing non-ASCI characters
           # after behing unicode encoded with `EncodeUtil.encode_utf16le`
           # doesn't play well. Upcase should be done before encoding.
-          user_upcase = EncodeUtil.decode_utf16le(user).upcase
-          user_upcase = EncodeUtil.encode_utf16le(user_upcase)
+          EncodeUtil.encode_utf16le(EncodeUtil.decode_utf16le(user).upcase)
         else
-          user_upcase = user.upcase
+          user.upcase
         end
-        userdomain = user_upcase + target
-
-        unless opt[:unicode]
-          userdomain = EncodeUtil.encode_utf16le(userdomain)
-        end
-        OpenSSL::HMAC.digest(OpenSSL::Digest::MD5.new, ntlmhash, userdomain)
-      end
-
-      def lm_response(arg)
-        begin
-          hash = arg[:lm_hash]
-          chal = arg[:challenge]
-        rescue
-          raise ArgumentError
-        end
-        chal = NTLM::pack_int64le(chal) if chal.is_a?(Integer)
-        keys = gen_keys hash.ljust(21, "\0")
-        apply_des(chal, keys).join
-      end
-
-      def ntlm_response(arg)
-        hash = arg[:ntlm_hash]
-        chal = arg[:challenge]
-        chal = NTLM::pack_int64le(chal) if chal.is_a?(Integer)
-        keys = gen_keys hash.ljust(21, "\0")
-        apply_des(chal, keys).join
-      end
-
-      def ntlmv2_response(arg, opt = {})
-        begin
-          key = arg[:ntlmv2_hash]
-          chal = arg[:challenge]
-          ti = arg[:target_info]
-        rescue
-          raise ArgumentError
-        end
-        chal = NTLM::pack_int64le(chal) if chal.is_a?(Integer)
-
-        if opt[:client_challenge]
-          cc  = opt[:client_challenge]
-        else
-          cc = rand(MAX64)
-        end
-        cc = NTLM::pack_int64le(cc) if cc.is_a?(Integer)
-
-        if opt[:timestamp]
-          ts = opt[:timestamp]
-        else
-          ts = Time.now.to_i
-        end
-        # epoch -> milsec from Jan 1, 1601
-        ts = 10_000_000 * (ts + TIME_OFFSET)
-
-        blob = Blob.new
-        blob.timestamp = ts
-        blob.challenge = cc
-        blob.target_info = ti
-
-        bb = blob.serialize
-
-        OpenSSL::HMAC.digest(OpenSSL::Digest::MD5.new, key, chal + bb) + bb
-      end
-
-      def lmv2_response(arg, opt = {})
-        key = arg[:ntlmv2_hash]
-        chal = arg[:challenge]
-
-        chal = NTLM::pack_int64le(chal) if chal.is_a?(Integer)
-
-        if opt[:client_challenge]
-          cc  = opt[:client_challenge]
-        else
-          cc = rand(MAX64)
-        end
-        cc = NTLM::pack_int64le(cc) if cc.is_a?(Integer)
-
-        OpenSSL::HMAC.digest(OpenSSL::Digest::MD5.new, key, chal + cc) + cc
-      end
-
-      def ntlm2_session(arg, opt = {})
-        begin
-          passwd_hash = arg[:ntlm_hash]
-          chal = arg[:challenge]
-        rescue
-          raise ArgumentError
-        end
-        chal = NTLM::pack_int64le(chal) if chal.is_a?(Integer)
-
-        if opt[:client_challenge]
-          cc = opt[:client_challenge]
-        else
-          cc = rand(MAX64)
-        end
-        cc = NTLM::pack_int64le(cc) if cc.is_a?(Integer)
-
-        keys = gen_keys(passwd_hash.ljust(21, "\0"))
-        session_hash = OpenSSL::Digest::MD5.digest(chal + cc).slice(0, 8)
-        response = apply_des(session_hash, keys).join
-        [cc.ljust(24, "\0"), response]
       end
     end
-
   end
 end

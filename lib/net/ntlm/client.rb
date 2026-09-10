@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 module Net
   module NTLM
+    # High-level NTLM client: builds type1 and type3 messages for a session.
     class Client
-
       DEFAULT_FLAGS = NTLM::FLAGS[:UNICODE] | NTLM::FLAGS[:OEM] |
-        NTLM::FLAGS[:SIGN]   | NTLM::FLAGS[:SEAL]         | NTLM::FLAGS[:REQUEST_TARGET] |
-        NTLM::FLAGS[:NTLM]   | NTLM::FLAGS[:ALWAYS_SIGN]  | NTLM::FLAGS[:NTLM2_KEY] |
-        NTLM::FLAGS[:KEY128] | NTLM::FLAGS[:KEY_EXCHANGE] | NTLM::FLAGS[:KEY56]
+                      NTLM::FLAGS[:SIGN]   | NTLM::FLAGS[:SEAL]         | NTLM::FLAGS[:REQUEST_TARGET] |
+                      NTLM::FLAGS[:NTLM]   | NTLM::FLAGS[:ALWAYS_SIGN]  | NTLM::FLAGS[:NTLM2_KEY] |
+                      NTLM::FLAGS[:KEY128] | NTLM::FLAGS[:KEY_EXCHANGE] | NTLM::FLAGS[:KEY56]
 
       attr_reader :username, :password, :domain, :workstation, :flags
 
@@ -38,9 +40,7 @@ module Net
       end
 
       # @return [Client::Session]
-      def session
-        @session
-      end
+      attr_reader :session
 
       def session_key
         @session.exported_session_key
@@ -57,9 +57,8 @@ module Net
 
         type1
       end
-
     end
   end
 end
 
-require "net/ntlm/client/session"
+require 'net/ntlm/client/session'
