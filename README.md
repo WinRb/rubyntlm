@@ -1,6 +1,6 @@
 # Ruby/NTLM -- NTLM Authentication Library for Ruby
 
-[![build status](https://github.com/WinRb/rubyntlm/actions/workflows/build.yml/badge.svg?branch=master&event=push)](https://github.com/WinRb/rubyntlm/actions/workflows/build.yml?query=branch%3Amaster+event%3Apush)
+[![build status](https://github.com/WinRb/rubyntlm/actions/workflows/build.yml/badge.svg)](https://github.com/WinRb/rubyntlm/actions/workflows/build.yml)
 
 Ruby/NTLM provides message creator and parser for the NTLM authentication. 
 
@@ -45,4 +45,4 @@ Contributing
 2. Create a branch (git checkout -b my_feature_branch)
 3. Commit your changes (git commit -am "Added a sweet feature")
 4. Push to the branch (git push origin my_feature_branch)
-5. Create a pull requst from your branch into master (Please be sure to provide enough detail for us to cipher what this change is doing)
+5. Create a pull request from your branch into main (Please be sure to provide enough detail for us to cipher what this change is doing)
