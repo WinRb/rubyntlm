@@ -116,3 +116,21 @@ jobs:
           file: coverage/.resultset.json
           format: simplecov
 
+  frozen-string-literal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      # Regression guard for the frozen-string-literal compatibility work in
+      # #64: runs the whole suite with string literals frozen process-wide, so
+      # any future mutation of a frozen literal fails loudly here instead of
+      # on user machines running Ruby with --enable-frozen-string-literal.
+      - name: Run specs with frozen string literals
+        env:
+          RUBYOPT: "--enable-frozen-string-literal --debug-frozen-string-literal"
+        run: bundle exec rake spec
