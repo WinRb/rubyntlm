@@ -6,6 +6,11 @@ module Net
       # Session key derivation and NTLMv2 response building for
       # {Net::NTLM::Client::Session}. Included into Session; not used directly.
       module SessionCrypto
+        CLIENT_TO_SERVER_SIGNING = "session key to client-to-server signing key magic constant\0"
+        SERVER_TO_CLIENT_SIGNING = "session key to server-to-client signing key magic constant\0"
+        CLIENT_TO_SERVER_SEALING = "session key to client-to-server sealing key magic constant\0"
+        SERVER_TO_CLIENT_SEALING = "session key to server-to-client sealing key magic constant\0"
+
         # @return [String] session key exchanged with (or derived for) the server
         def exported_session_key
           @exported_session_key ||=
