@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.6.8 (2026-09-14)
+
+* Fix `NameError` on sign, seal, unseal, and verify: the 0.6.7 refactor moved the crypto methods into `SessionCrypto` but left their constants behind in `Session`, breaking message protection for encrypted winrm sessions ([#81](https://github.com/WinRb/rubyntlm/issues/81), [#80](https://github.com/WinRb/rubyntlm/pull/80))
 ## 0.6.7 (2026-09-14)
 
 * Fix gem packaging: 0.6.6 shipped every file with mode 0660 (no world-read), so `require` failed for non-owner users. 0.6.7 is identical code, repackaged with the standard 0644 modes ([#77](https://github.com/WinRb/rubyntlm/issues/77))
