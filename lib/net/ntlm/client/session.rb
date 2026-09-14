@@ -11,10 +11,6 @@ module Net
       VERSION_MAGIC = "\x01\x00\x00\x00"
       TIME_OFFSET   = 11_644_473_600
       MAX64         = 0xffffffffffffffff
-      CLIENT_TO_SERVER_SIGNING = "session key to client-to-server signing key magic constant\0"
-      SERVER_TO_CLIENT_SIGNING = "session key to server-to-client signing key magic constant\0"
-      CLIENT_TO_SERVER_SEALING = "session key to client-to-server sealing key magic constant\0"
-      SERVER_TO_CLIENT_SEALING = "session key to server-to-client sealing key magic constant\0"
 
       attr_reader :client, :challenge_message, :channel_binding
 
