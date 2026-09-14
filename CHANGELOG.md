@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.6.7 (2026-09-14)
+
+* Fix gem packaging: 0.6.6 shipped every file with mode 0660 (no world-read), so `require` failed for non-owner users. 0.6.7 is identical code, repackaged with the standard 0644 modes ([#77](https://github.com/WinRb/rubyntlm/issues/77))
+
 ## 0.6.6 (2026-09-09)
 
 * Security: fix NTLMv2 authentication bypass in `Type3#password?`, which verified NTLMv2 responses against an empty password instead of the supplied one
