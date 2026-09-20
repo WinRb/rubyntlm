@@ -46,8 +46,14 @@ module Net
         end
       end
 
+      # Returns the hash of the server certificate as defined by the
+      # "tls-server-end-point" channel binding type (RFC 5929 section 4.1):
+      # the digest is selected from the certificate's own signature
+      # algorithm, with MD5 and SHA-1 signatures upgraded to SHA-256.
+      #
+      # @return [OpenSSL::Digest] digest of the DER-encoded certificate
       def channel_hash
-        @channel_hash ||= OpenSSL::Digest::SHA256.new(channel.to_der)
+        @channel_hash ||= channel_binding_digest.new(channel.to_der)
       end
 
       def application_data
@@ -60,6 +66,18 @@ module Net
       end
 
       private
+
+      # RFC 5929 section 4.1 selects the tls-server-end-point hash from the
+      # server certificate's signature algorithm. Anything that is not an
+      # explicit SHA-384 or SHA-512 signature (including MD5, SHA-1 and
+      # unknown algorithms such as RSA-PSS) falls back to SHA-256.
+      def channel_binding_digest
+        case channel.signature_algorithm
+        when /sha384/i then OpenSSL::Digest::SHA384
+        when /sha512/i then OpenSSL::Digest::SHA512
+        else OpenSSL::Digest::SHA256
+        end
+      end
 
       def pack_address_header
         [initiator_addtype, initiator_address_length, acceptor_addrtype, acceptor_address_length].pack('I4')
