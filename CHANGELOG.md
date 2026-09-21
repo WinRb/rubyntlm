@@ -1,5 +1,9 @@
 # Change Log
 
+## Unreleased
+
+* Fix `tls-server-end-point` channel binding when the server presents a SHA-384- or SHA-512-signed certificate: the hash is now selected from the server certificate's signature algorithm per RFC 5929 section 4.1, instead of always using SHA-256. NTLM authentication with Extended Protection failed against such servers because the client's channel binding never matched the server's expected value ([#84](https://github.com/WinRb/rubyntlm/pull/84))
+
 ## 0.6.8 (2026-09-14)
 
 * Fix `NameError` on sign, seal, unseal, and verify: the 0.6.7 refactor moved the crypto methods into `SessionCrypto` but left their constants behind in `Session`, breaking message protection for encrypted winrm sessions ([#81](https://github.com/WinRb/rubyntlm/issues/81), [#80](https://github.com/WinRb/rubyntlm/pull/80))
