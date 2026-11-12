@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
   s.files         = `git ls-files lib`.split($INPUT_RECORD_SEPARATOR) + ['CHANGELOG.md', 'LICENSE', 'README.md']
   s.require_paths = ['lib']
 
+  # 3.0 is the install floor; 3.1+ is the supported range (see README).
   s.required_ruby_version = '>= 3.0.0'
 
   s.license = 'MIT'
