@@ -6,6 +6,10 @@ Ruby/NTLM provides message creator and parser for the NTLM authentication.
 
 __100% Ruby__
 
+## Supported Ruby Versions
+
+Ruby 3.1 or higher is supported. The gem can still be installed on Ruby 3.0, but 3.0 is end-of-life and not tested.
+
 How to install
 --------------
 
